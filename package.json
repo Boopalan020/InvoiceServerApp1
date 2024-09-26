@@ -1,0 +1,72 @@
+{
+  "name": "InvoiceServerApp1",
+  "version": "1.0.0",
+  "description": "A simple CAP project.",
+  "repository": "<Add your repository here>",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@cap-js/hana": "^1",
+    "@sap-cloud-sdk/http-client": "^3.21.0",
+    "@sap-cloud-sdk/resilience": "^3.21.0",
+    "@sap-cloud-sdk/util": "^3.21.0",
+    "@sap/cds": "^8",
+    "@sap/xssec": "^4",
+    "express": "^4"
+  },
+  "devDependencies": {
+    "@cap-js/cds-types": "^0.6",
+    "@cap-js/sqlite": "^1",
+    "@sap/cds-dk": "^8",
+    "@sap/ux-specification": "UI5-1.128",
+    "rimraf": "^5.0.5"
+  },
+  "scripts": {
+    "start": "cds-serve",
+    "watch-invoiceui": "cds watch --open invoiceui/webapp/index.html?sap-ui-xx-viewCache=false",
+    "undeploy": "cf undeploy InvoiceServerApp1 --delete-services --delete-service-keys --delete-service-brokers",
+    "build": "rimraf resources mta_archives && mbt build --mtar archive",
+    "deploy": "cf deploy mta_archives/archive.mtar --retries 1"
+  },
+  "sapux": [
+    "app/invoiceui"
+  ],
+  "cds": {
+    "requires": {
+      "[production]": {
+        "db": "hana",
+        "auth": "xsuaa"
+      },
+      "[development]": {
+        "auth": "xsuaa",
+        "destinations": true
+      },
+      "materialDoc": {
+        "kind": "odata-v2",
+        "model": "srv/external/materialDoc",
+        "credentials": {
+          "destination": "onprem",
+          "path": "/sap/opu/odata/sap/ZSBIND_MATDOC_3"
+        }
+      },
+      "invoicesrv": {
+        "kind": "odata-v2",
+        "model": "srv/external/invoicesrv",
+        "credentials": {
+          "destination": "onprem",
+          "path": "/sap/opu/odata/sap/API_SUPPLIERINVOICE_PROCESS_SRV"
+        }
+      },
+      "spa_api": {
+        "kind": "rest",
+        "credentials": {
+          "destination": "spa_api"
+        }
+      },
+      "html5-repo": true
+    },
+    "sql": {
+      "native_hana_associations": false
+    }
+  }
+}

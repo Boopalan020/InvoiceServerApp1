@@ -1,0 +1,133 @@
+###
+POST http://localhost:4004/invoiceAutomation-srv/threeWayCheck
+Content-Type: application/json
+
+{
+    "data": {
+        "PONumber": "4500001809",
+        "MailDateTime": "2024-09-12T12:09:48+05:30",
+        "SupplierMail": "Boopalan@itresonance.com",
+        "MailSubject": "Invoice",
+        "SupInvNumber": "94813519",
+        "CreatedInvNumber": "",
+        "SupplierNumber": "",
+        "SupplierName": "Linon Home Decor Products,Inc.",
+        "PODate": "2024-08-29",
+        "Currency": "USD",
+        "GrossAmount": "900",
+        "StatusCode": "",
+        "Message": "",
+        "ProcessFlowID": "",
+        "SupplierName_ac": "9.22",
+        "PONumber_ac": "91.32",
+        "PODate_ac": "91.62",
+        "Curr_ac": "92.79",
+        "SupInvNumber_ac": "91.32",
+        "GrossAmount_ac": "90.61",
+        "Items": [
+            {
+                "PONumber": "4500001809",
+                "MaterialNumber": "TG0011",
+                "Quantity": "10",
+                "UoM": "PC",
+                "UnitPrice": "50",
+                "NetAmount": "500",
+                "MatNum_ac": "90.51",
+                "Quantity_ac": "90.66",
+                "UoM_ac": "58.89",
+                "UnitPrice_ac": "90.60",
+                "NetAmount_ac": "90.56"
+            },
+            {
+                "PONumber": "4500001809",
+                "MaterialNumber": "TG0012",
+                "Quantity": "10",
+                "UoM": "PC",
+                "UnitPrice": "40",
+                "NetAmount": "400",
+                "MatNum_ac": "87.90",
+                "Quantity_ac": "90.38",
+                "UoM_ac": "58.80",
+                "UnitPrice_ac": "90.41",
+                "NetAmount_ac": "90.37"
+            }
+        ]
+    }
+}
+
+
+###
+POST http://localhost:4004/invoiceAutomation-srv/PostInvoice
+Content-Type: application/json
+
+{
+    "data" : {
+        "PONumber" : "4500001806",
+        "MailDateTime" : "2024-08-08T23:35:42+05:30",
+        "Comp_Code" : "1710",
+        "SupplierMail" : "noreply@abc.com",
+        "MailSubject" : "Invoice Processing PO#4500001806",
+        "SupInvNumber" : "50000309",
+        "CreatedInvNumber" : "",
+        "SupplierNumber" : "17300001",
+        "SupplierName" : "Domestic US Supplier 1",
+        "PODate" : "2024-08-06",
+        "Currency" : "USD",
+        "GrossAmount" : "900",
+        "StatusCode" : "53",
+        "Message" : "Approved",
+        "ProcessFlowID" : "94afa448-6f8f-11ef-885b-eeee0a9b5380",
+        "SupplierName_ac" : "0.97",
+        "PONumber_ac" : "0.96",
+        "PODate_ac" : "0.9",
+        "Curr_ac" : "1.0",
+        "SupInvNumber_ac" : "1.0",
+        "GrossAmount_ac" : "0.81",
+        "Items" : [{
+            "PONumber" : "4500001806",
+            "MaterialNumber" : "TG0011",
+            "Quantity" : "10",
+            "UoM" : "PC",
+            "UnitPrice" : "50",
+            "NetAmount" : "500",
+            "MatNum_ac" : "0.81",
+            "Quantity_ac" : "0.97",
+            "UoM_ac" : "1",
+            "UnitPrice_ac" : "0.98",
+            "NetAmount_ac" : "0.81",
+            "Message" : "",
+            "SuplInvItem" : "1",
+            "POItem" : "10",
+            "ReferenceDocument" : "5000002375",
+            "ReferenceDocumentFiscalYear" : "2024",
+            "ReferenceDocumentItem" : "1",
+            "FiscalYear" : "2024"
+        },{
+            "PONumber" : "4500001806",
+            "MaterialNumber" : "TG0012",
+            "Quantity" : "10",
+            "UoM" : "PC",
+            "UnitPrice" : "40",
+            "NetAmount" : "400",
+            "MatNum_ac" : "0.99",
+            "Quantity_ac" : "0.97",
+            "UoM_ac" : "1",
+            "UnitPrice_ac" : "0.98",
+            "NetAmount_ac" : "0.81",
+            "Message" : "",
+            "SuplInvItem" : "2",
+            "POItem" : "20",
+            "ReferenceDocument" : "5000002375",
+            "ReferenceDocumentFiscalYear" : "2024",
+            "ReferenceDocumentItem" : "2",
+            "FiscalYear" : "2024"
+        }]
+    }
+}
+
+
+###
+POST http://localhost:4004/invoiceAutomation-srv/InvoiceHeader(ID='141547df-4978-424c-8df8-9fe223f65343',IsActiveEntity=true)/threeWayCheckUI
+Content-Type: application/json
+
+{}

@@ -1,0 +1,200 @@
+{
+    "_version": "1.65.0",
+    "sap.app": {
+        "id": "ns.invoiceui",
+        "type": "application",
+        "i18n": "i18n/i18n.properties",
+        "applicationVersion": {
+            "version": "0.0.1"
+        },
+        "title": "{{appTitle}}",
+        "description": "{{appDescription}}",
+        "resources": "resources.json",
+        "sourceTemplate": {
+            "id": "@sap/generator-fiori:fpm",
+            "version": "1.15.0",
+            "toolsId": "57594eea-c65e-4bee-9328-c4cadcce83f7"
+        },
+        "dataSources": {
+            "mainService": {
+                "uri": "invoiceAutomation-srv/",
+                "type": "OData",
+                "settings": {
+                    "annotations": [],
+                    "odataVersion": "4.0"
+                }
+            }
+        },
+        "crossNavigation": {
+            "inbounds": {
+                "invoices-display": {
+                    "semanticObject": "invoices",
+                    "action": "display",
+                    "title": "{{flpTitle}}",
+                    "signature": {
+                        "parameters": {},
+                        "additionalParameters": "allowed"
+                    }
+                }
+            }
+        }
+    },
+    "sap.ui": {
+        "technology": "UI5",
+        "icons": {
+            "icon": "",
+            "favIcon": "",
+            "phone": "",
+            "phone@2": "",
+            "tablet": "",
+            "tablet@2": ""
+        },
+        "deviceTypes": {
+            "desktop": true,
+            "tablet": true,
+            "phone": true
+        }
+    },
+    "sap.ui5": {
+        "flexEnabled": true,
+        "dependencies": {
+            "minUI5Version": "1.128.1",
+            "libs": {
+                "sap.m": {},
+                "sap.ui.core": {},
+                "sap.fe.core": {},
+                "sap.fe.templates": {},
+                "sap.f": {}
+            }
+        },
+        "contentDensities": {
+            "compact": true,
+            "cozy": true
+        },
+        "models": {
+            "i18n": {
+                "type": "sap.ui.model.resource.ResourceModel",
+                "settings": {
+                    "bundleName": "ns.invoiceui.i18n.i18n"
+                }
+            },
+            "": {
+                "dataSource": "mainService",
+                "preload": true,
+                "settings": {
+                    "operationMode": "Server",
+                    "autoExpandSelect": true,
+                    "earlyRequests": true
+                }
+            },
+            "@i18n": {
+                "type": "sap.ui.model.resource.ResourceModel",
+                "uri": "i18n/i18n.properties"
+            }
+        },
+        "resources": {
+            "css": []
+        },
+        "routing": {
+            "config": {
+                "flexibleColumnLayout": {
+                    "defaultTwoColumnLayoutType": "TwoColumnsMidExpanded",
+                    "defaultThreeColumnLayoutType": "ThreeColumnsMidExpanded"
+                },
+                "routerClass": "sap.f.routing.Router"
+            },
+            "routes": [
+                {
+                    "name": "InvoiceHeaderMain",
+                    "pattern": ":?query:",
+                    "target": [
+                        "InvoiceHeaderMain"
+                    ]
+                },
+                {
+                    "name": "InvoiceHeaderObjectPage",
+                    "pattern": "InvoiceHeader({InvoiceHeaderKey}):?query:",
+                    "target": [
+                        "InvoiceHeaderMain",
+                        "InvoiceHeaderObjectPage"
+                    ]
+                },
+                {
+                    "name": "InvoiceHeader_ItemsObjectPage",
+                    "pattern": "InvoiceHeader({InvoiceHeaderKey})/Items({ItemsKey}):?query:",
+                    "target": [
+                        "InvoiceHeaderMain",
+                        "InvoiceHeaderObjectPage",
+                        "InvoiceHeader_ItemsObjectPage"
+                    ]
+                }
+            ],
+            "targets": {
+                "InvoiceHeaderMain": {
+                    "type": "Component",
+                    "id": "InvoiceHeaderMain",
+                    "name": "sap.fe.core.fpm",
+                    "options": {
+                        "settings": {
+                            "viewName": "ns.invoiceui.ext.main.Main",
+                            "contextPath": "/InvoiceHeader",
+                            "navigation": {
+                                "InvoiceHeader": {
+                                    "detail": {
+                                        "route": "InvoiceHeaderObjectPage"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "controlAggregation": "beginColumnPages",
+                    "contextPattern": ""
+                },
+                "InvoiceHeaderObjectPage": {
+                    "type": "Component",
+                    "id": "InvoiceHeaderObjectPage",
+                    "name": "sap.fe.templates.ObjectPage",
+                    "options": {
+                        "settings": {
+                            "navigation": {
+                                "Items": {
+                                    "detail": {
+                                        "route": "InvoiceHeader_ItemsObjectPage"
+                                    }
+                                }
+                            },
+                            "contextPath": "/InvoiceHeader",
+                            "editableHeaderContent": false
+                        }
+                    },
+                    "controlAggregation": "midColumnPages",
+                    "contextPattern": "/InvoiceHeader({InvoiceHeaderKey})"
+                },
+                "InvoiceHeader_ItemsObjectPage": {
+                    "type": "Component",
+                    "id": "InvoiceHeader_ItemsObjectPage",
+                    "name": "sap.fe.templates.ObjectPage",
+                    "controlAggregation": "endColumnPages",
+                    "options": {
+                        "settings": {
+                            "navigation": {},
+                            "contextPath": "/InvoiceHeader/Items",
+                            "editableHeaderContent": false
+                        }
+                    },
+                    "contextPattern": "/InvoiceHeader({InvoiceHeaderKey})/Items({ItemsKey})"
+                }
+            }
+        },
+        "rootView": {
+            "viewName": "sap.fe.templates.RootContainer.view.Fcl",
+            "type": "XML",
+            "async": true,
+            "id": "appRootView"
+        }
+    },
+    "sap.cloud": {
+        "public": true,
+        "service": "invoices"
+    }
+}

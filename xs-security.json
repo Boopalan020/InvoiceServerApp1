@@ -1,0 +1,19 @@
+{
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.Invoice_Admin",
+      "description": "Invoice_Admin"
+    }
+  ],
+  "attributes": [],
+  "role-templates": [
+    {
+      "name": "Invoice_Admin",
+      "description": "generated",
+      "scope-references": [
+        "$XSAPPNAME.Invoice_Admin"
+      ],
+      "attribute-references": []
+    }
+  ]
+}
