@@ -123,7 +123,7 @@ service InvoiceService
 extend Tables.InvoiceHeader with {
     Criticality_code : Integer = case 
                                     when ( StatusCode = '10' or StatusCode = '20' or StatusCode = '30' or StatusCode = '60' or StatusCode = '54' ) then 1
-                                    when ( StatusCode = '61' ) then 3
+                                    when ( StatusCode = '61' or StatusCode = 'S' ) then 3
                                     when ( StatusCode = '52' ) then 2
                                     when ( StatusCode = '50' ) then 5
                                     else 0

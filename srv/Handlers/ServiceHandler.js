@@ -25,7 +25,7 @@ module.exports = class InvoiceService extends cds.ApplicationService {
             req.data.SupInvNumber_ac = '99';
 
             // Changing the status
-            req.data.StatusCode = '';
+            req.data.StatusCode = 'S';
             req.data.Message = 'Saved';
 
             console.log("Correction Accuracy :", req.data);
@@ -158,6 +158,7 @@ module.exports = class InvoiceService extends cds.ApplicationService {
                         "data": HeaderData
                     }
                 };
+                console.log("Workflow Payload Data : ",payload_spa)
     
                 let bpa_api;
                 try {
