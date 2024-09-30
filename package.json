@@ -35,7 +35,9 @@
     "requires": {
       "[production]": {
         "db": "hana",
-        "auth": "xsuaa"
+        "auth": "xsuaa",
+        "destinations": true,
+        "connectivity": true
       },
       "[development]": {
         "auth": "xsuaa",
@@ -63,7 +65,8 @@
           "destination": "spa_api"
         }
       },
-      "html5-repo": true
+      "html5-repo": true,
+      "connectivity": true
     },
     "sql": {
       "native_hana_associations": false
