@@ -4,7 +4,7 @@ annotate InvoiceService.InvoiceHeader {
 
 } actions {
     threeWayCheckUI @(
-        Core.OperationAvailable : { $edmJson: { $Ne: [{ $Path: 'in/StatusCode' }, '52'] } },
+        Core.OperationAvailable : { $edmJson: { $Eq: [{ $Path: 'in/StatusCode' }, 'S'] } },
         Common : {
             SideEffects : {
                 $Type : 'Common.SideEffectsType',

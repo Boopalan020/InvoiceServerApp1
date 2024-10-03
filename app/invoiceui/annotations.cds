@@ -4,6 +4,26 @@ using from '../../db/schema';
 
 annotate service.InvoiceHeader with @(
     odata.draft.enabled,
+    UI.DeleteHidden : { 
+        $edmJson: {               
+            $Or: [  { $Eq: [ { $Path: 'StatusCode' }, '52'  ] },
+                    { $Eq: [ { $Path: 'StatusCode' }, '61'  ] }         
+            ]
+        }
+     },
+    UI.UpdateHidden : { 
+        $edmJson: {               
+        $If: [
+                {                         
+                    $Or: [  { $Eq: [ { $Path: 'StatusCode' }, '52'  ] },
+                            { $Eq: [ { $Path: 'StatusCode' }, '61'  ] }         
+                    ]
+                },
+                true,
+                false
+            ]
+        } 
+    },
     UI.SelectionFields : [
         Comp_Code,
         PONumber,
@@ -147,7 +167,7 @@ annotate service.InvoiceHeader with @(
             },
             PONumber_ac : {
                 $Type : 'UI.DataField',
-                Value : PONumber_ac,
+                Value : PONumber_ac_text,
                 Criticality : PONumber_acc,
                 CriticalityRepresentation : #WithoutIcon,
             },
@@ -164,7 +184,7 @@ annotate service.InvoiceHeader with @(
             },
             SupplierName_ac : {
                 $Type : 'UI.DataField',
-                Value : SupplierName_ac,
+                Value : SupplierName_ac_text,
             },
         },
     },
@@ -179,7 +199,7 @@ annotate service.InvoiceHeader with @(
             },
             SupInvNumber_ac : {
                 $Type : 'UI.DataField',
-                Value : SupInvNumber_ac,
+                Value : SupInvNumber_ac_text,
                 Criticality : SupInvNumber_acc,
                 CriticalityRepresentation : #WithoutIcon,
             },
@@ -196,7 +216,7 @@ annotate service.InvoiceHeader with @(
             },
             Curr_ac : {
                 $Type : 'UI.DataField',
-                Value : Curr_ac,
+                Value : Curr_ac_text,
                 Criticality : Curr_acc,
                 CriticalityRepresentation : #WithoutIcon,
             },
@@ -213,7 +233,7 @@ annotate service.InvoiceHeader with @(
             },
             GrossAmount_ac : {
                 $Type : 'UI.DataField',
-                Value : GrossAmount_ac,
+                Value : GrossAmount_ac_text,
                 Criticality : GrossAmount_acc,
                 CriticalityRepresentation : #WithoutIcon,
             },
@@ -413,7 +433,7 @@ annotate service.InvoiceItems with @(
             },
             MatNum_ac : {
                 $Type : 'UI.DataField',
-                Value : MatNum_ac,
+                Value : MatNum_ac_text,
                 Criticality : MatNum_acc,
                 CriticalityRepresentation : #WithoutIcon,
             },
@@ -430,7 +450,7 @@ annotate service.InvoiceItems with @(
             },
             Quantity_ac : {
                 $Type : 'UI.DataField',
-                Value : Quantity_ac,
+                Value : Quantity_ac_text,
                 Criticality : Quantity_acc,
                 CriticalityRepresentation : #WithoutIcon,
             },
@@ -447,7 +467,7 @@ annotate service.InvoiceItems with @(
             },
             UnitPrice_ac : {
                 $Type : 'UI.DataField',
-                Value : UnitPrice_ac,
+                Value : UnitPrice_ac_text,
                 Criticality : UnitPrice_acc,
                 CriticalityRepresentation : #WithoutIcon,
             },
@@ -464,7 +484,7 @@ annotate service.InvoiceItems with @(
             },
             NetAmount_ac : {
                 $Type : 'UI.DataField',
-                Value : NetAmount_ac,
+                Value : NetAmount_ac_text,
                 Criticality : NetAmount_acc,
                 CriticalityRepresentation : #WithoutIcon,
             },
@@ -481,7 +501,7 @@ annotate service.InvoiceItems with @(
             },
             UoM_ac : {
                 $Type : 'UI.DataField',
-                Value : UoM_ac,
+                Value : UoM_ac_text,
                 Criticality : UoM_acc,
                 CriticalityRepresentation : #WithoutIcon,
             },

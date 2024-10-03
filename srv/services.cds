@@ -128,22 +128,27 @@ extend Tables.InvoiceHeader with {
                                     when ( StatusCode = '50' ) then 5
                                     else 0
                                 end;
+    PONumber_ac_text : String = PONumber_ac || ' %';
     PONumber_acc : Integer = case 
                                 when ( PONumber_ac < '80' ) then 1
                                 else 5
                             end;
+    SupplierName_ac_text : String = SupplierName_ac || ' %';
     SupplierName_acc : Integer = case 
                                     when ( SupplierName_ac < '80' ) then 1
                                     else 5
                                 end;
+    SupInvNumber_ac_text : String = SupInvNumber_ac || ' %';
     SupInvNumber_acc : Integer = case 
                                     when ( SupInvNumber_ac < '80' ) then 1
                                     else 5
                                 end;
+    Curr_ac_text : String = Curr_ac || ' %';
     Curr_acc : Integer = case 
                             when ( Curr_ac < '80' ) then 1
                             else 5
                         end;
+    GrossAmount_ac_text : String = GrossAmount_ac || ' %';
     GrossAmount_acc : Integer = case 
                             when ( GrossAmount_ac < '80' ) then 1
                             else 5
@@ -157,22 +162,27 @@ extend Tables.Items with {
                                         when Message <> '' then 1
                                         when Message = '' then 0
                                       end;
+    MatNum_ac_text : String = MatNum_ac || ' %';
     MatNum_acc : Integer = case 
                             when ( MatNum_ac < '80' ) then 1
                             else 5
                         end;
+    Quantity_ac_text : String = Quantity_ac || ' %';
     Quantity_acc : Integer = case 
                             when ( Quantity_ac < '80' ) then 1
                             else 5
                         end;
+    UnitPrice_ac_text : String = UnitPrice_ac || ' %';
     UnitPrice_acc : Integer = case 
                             when ( UnitPrice_ac < '80' ) then 1
                             else 5
                         end;
+    UoM_ac_text : String = UoM_ac || ' %';
     UoM_acc : Integer = case 
                             when ( UoM_ac < '80' ) then 1
                             else 5
                         end;
+    NetAmount_ac_text : String = NetAmount_ac || ' %';
     NetAmount_acc : Integer = case 
                             when ( NetAmount_ac < '80' ) then 1
                             else 5

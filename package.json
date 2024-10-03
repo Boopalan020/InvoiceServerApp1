@@ -40,7 +40,7 @@
         "connectivity": true
       },
       "[development]": {
-        "auth": "xsuaa",
+        "auth": "mocked",
         "destinations": true
       },
       "materialDoc": {

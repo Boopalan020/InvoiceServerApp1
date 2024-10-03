@@ -4,10 +4,43 @@ module.exports = class InvoiceService extends cds.ApplicationService {
     init() {
 
         ///////////////////////////////////// --- UI - Action Call //////////////////////////////////////////////////////////
-        
+
         // Update Event for invoice Header
         this.before("UPDATE", "InvoiceHeader", async (req, next) => {
-            
+
+            // // Cancel the workflow, if processflowid has a value!
+            // if (req.data.ProcessFlowID != '') {
+                
+            //     console.log("Need to cancel the triggered workflow");
+            //     try {
+            //         // BPA API - Destination service
+            //         let oSPA_api = await cds.connect.to("spa_api");
+
+            //         // Payload
+            //         let payload_spa = {
+            //             "status": "CANCELED",
+            //             "cascade": false
+            //         };
+
+            //         let bpa_api = await oSPA_api.send({
+            //             method: "PATCH",
+            //             path: `/workflow/rest/v1/workflow-instances/${req.data.ProcessFlowID}`,
+            //             headers: {
+            //                 "contentType": "application/json"
+            //             },
+            //             data: payload_spa
+            //         });
+            //         console.log(bpa_api);
+            //     } catch (err) {
+            //         console.log("Error while cancelling Workflow trigger", err);
+            //     }
+
+            //     req.data.ProcessFlowID = '';
+            // } else {
+            //     console.log("No workflow has been triggered");
+            // }
+
+            // Updaing the Accuracy to 99%, on saving the record
             for (const item of req.data.Items) {
                 item.MatNum_ac = '99';
                 item.Quantity_ac = '99';
@@ -15,7 +48,7 @@ module.exports = class InvoiceService extends cds.ApplicationService {
                 item.UnitPrice_ac = '99';
                 item.NetAmount_ac = '99';
             }
-            
+
             // Changing the accuracy to 99%
             req.data.PONumber_ac = '99';
             req.data.Curr_ac = '99';
@@ -46,7 +79,10 @@ module.exports = class InvoiceService extends cds.ApplicationService {
                 bHFlag = '',
                 UPDATE_result;
 
-            let { InvoiceHeader, InvoiceItems } = cds.entities('tablemodel.srv.InvoiceService');
+            let {
+                InvoiceHeader,
+                InvoiceItems
+            } = cds.entities('tablemodel.srv.InvoiceService');
 
             // Connecting to necessary services in BTP
             try {
@@ -56,11 +92,15 @@ module.exports = class InvoiceService extends cds.ApplicationService {
                 console.log(oDB);
 
                 // Get the Current Entity Record details - Header
-                oHeaderData = await oDB.run(SELECT.from(InvoiceHeader).where({ID : Record_ID}));
+                oHeaderData = await oDB.run(SELECT.from(InvoiceHeader).where({
+                    ID: Record_ID
+                }));
                 console.log(oHeaderData);
 
                 // Get the item details
-                Items = await  SELECT.from(InvoiceItems).where({Parent_ID : Record_ID});
+                Items = await SELECT.from(InvoiceItems).where({
+                    Parent_ID: Record_ID
+                });
                 console.log(Items);
 
                 HeaderData = oHeaderData[0];
@@ -76,18 +116,18 @@ module.exports = class InvoiceService extends cds.ApplicationService {
             } catch (err) {
                 console.log("Error while connecting to one of the  services", err);
                 return {
-                    StatusCode : "XXX",
-                    Message : "Error while Connecting to necessary Services"
+                    StatusCode: "XXX",
+                    Message: "Error while Connecting to necessary Services"
                 };
             }
 
             // --------------START of Three-Way Check --------------------------------------------
-            
+
             // Entity
             let {
                 ZICDS_MATDOC_2
             } = oMatDocService.entities,
-            aMaterialDocs;
+                aMaterialDocs;
 
             // Querying Material document for PO number
             try {
@@ -98,8 +138,8 @@ module.exports = class InvoiceService extends cds.ApplicationService {
             } catch (err) {
                 console.log("Error while fetching data", err);
                 return {
-                    StatusCode : "XXX",
-                    Message : "Tech.Error while fetching data from Mat.Doc Destination Service"
+                    StatusCode: "XXX",
+                    Message: "Tech.Error while fetching data from Mat.Doc Destination Service"
                 };
             }
 
@@ -158,8 +198,8 @@ module.exports = class InvoiceService extends cds.ApplicationService {
                         "data": HeaderData
                     }
                 };
-                console.log("Workflow Payload Data : ",payload_spa)
-    
+                console.log("Workflow Payload Data : ", payload_spa)
+
                 let bpa_api;
                 try {
                     // Trigger BPA workflow
@@ -179,7 +219,7 @@ module.exports = class InvoiceService extends cds.ApplicationService {
 
                 } catch (err) {
                     console.log("Error while triggering Workflow", err);
-                    
+
                     HeaderData.StatusCode = "30";
                     HeaderData.Message = "Workflow trigger Failed!";
                 }
@@ -201,7 +241,7 @@ module.exports = class InvoiceService extends cds.ApplicationService {
             }
 
         });
-        
+
         ///////////////////////////////////// --- UI - Action Call //////////////////////////////////////////////////////////
 
 
@@ -221,7 +261,7 @@ module.exports = class InvoiceService extends cds.ApplicationService {
                 bHFlag = '',
                 INSERT_resp,
                 oDB,
-                oMatDocService, 
+                oMatDocService,
                 oSPA_api;
 
             // Connecting to necessary services in BTP
@@ -241,21 +281,20 @@ module.exports = class InvoiceService extends cds.ApplicationService {
             } catch (err) {
                 console.log("Error while connecting to one of the  services", err);
                 return {
-                    StatusCode : "XXX",
-                    Message : "Error while Connecting to necessary Services"
+                    StatusCode: "XXX",
+                    Message: "Error while Connecting to necessary Services"
                 };
             }
 
             // ------------- START of Accuracy Check ---------------------------------------------
 
             // Header Level Accuracy ? Good
-            
+
             if (parseInt(HeaderData.PONumber_ac) > 80 &&
                 parseInt(HeaderData.Curr_ac) > 80 &&
                 parseInt(HeaderData.GrossAmount_ac) > 80 &&
                 parseInt(HeaderData.PODate_ac) > 80
-            ) 
-            {
+            ) {
                 console.log('Header data Accuracy Level - Passed');
 
                 // Item Level Accuracy
@@ -287,17 +326,17 @@ module.exports = class InvoiceService extends cds.ApplicationService {
                 try {
                     INSERT_resp = await INSERT.into('db.tables.InvoiceHeader').entries(HeaderData);
                     console.log('Data Insert Result :', INSERT_resp);
-                    
+
                     // Return Failed Response
                     return {
                         StatusCode: "10",
                         Message: `Accuracy check failed! Saved the record ID:${INSERT_resp.query.INSERT.entries[0].ID}`
                     };
                 } catch (err) {
-                    console.log("Error while Inserting Execution Log data : ",err)
+                    console.log("Error while Inserting Execution Log data : ", err)
                     return {
-                        StatusCode : "12",
-                        Message : "Error while Inserting execution log data"
+                        StatusCode: "12",
+                        Message: "Error while Inserting execution log data"
                     };
                 }
             }
@@ -311,12 +350,12 @@ module.exports = class InvoiceService extends cds.ApplicationService {
             }
 
             // --------------START of Three-Way Check --------------------------------------------
-            
+
             // Entity
             let {
                 ZICDS_MATDOC_2
             } = oMatDocService.entities,
-            aMaterialDocs;
+                aMaterialDocs;
 
             // Querying Material document for PO number
             try {
@@ -327,8 +366,8 @@ module.exports = class InvoiceService extends cds.ApplicationService {
             } catch (err) {
                 console.log("Error while fetching data", err);
                 return {
-                    StatusCode : "XXX",
-                    Message : "Tech.Error while fetching data from Mat.Doc Destination Service"
+                    StatusCode: "XXX",
+                    Message: "Tech.Error while fetching data from Mat.Doc Destination Service"
                 };
             }
 
@@ -386,7 +425,7 @@ module.exports = class InvoiceService extends cds.ApplicationService {
                         "data": HeaderData
                     }
                 };
-    
+
                 let bpa_api;
                 try {
                     // Trigger BPA workflow
@@ -411,7 +450,7 @@ module.exports = class InvoiceService extends cds.ApplicationService {
                     });
                 } catch (err) {
                     console.log("Error while triggering Workflow", err);
-                    
+
                     HeaderData.StatusCode = "30";
                     HeaderData.Message = "Workflow trigger Failed!";
                 }
@@ -426,21 +465,21 @@ module.exports = class InvoiceService extends cds.ApplicationService {
                 INSERT_resp = await INSERT.into('db.tables.InvoiceHeader').entries(HeaderData);
                 console.log('Data Insert Result :', INSERT_resp);
 
-                if (HeaderData.StatusCode === '20' || HeaderData.StatusCode === '30') 
+                if (HeaderData.StatusCode === '20' || HeaderData.StatusCode === '30')
                     return {
-                        StatusCode : HeaderData.StatusCode,
-                        Message : HeaderData.Message
+                        StatusCode: HeaderData.StatusCode,
+                        Message: HeaderData.Message
                     };
-                else 
+                else
                     return {
-                        StatusCode : HeaderData.StatusCode,
-                        Message : "Good Accuracy -> 3-Way check Completed -> Workflow trigered -> Approval InProgress"
+                        StatusCode: HeaderData.StatusCode,
+                        Message: "Good Accuracy -> 3-Way check Completed -> Workflow trigered -> Approval InProgress"
                     };
             } catch (err) {
                 console.log("Error while saving execution Logs", err);
                 return {
-                    StatusCode : "40",
-                    Message : "All OK. However Execution log is not saved!"
+                    StatusCode: "40",
+                    Message: "All OK. However Execution log is not saved!"
                 }
             }
         });
@@ -462,7 +501,7 @@ module.exports = class InvoiceService extends cds.ApplicationService {
 
             try {
                 // Invoice Creation Approved
-                if(req.data.data.StatusCode === '53') {
+                if (req.data.data.StatusCode === '53') {
                     // Document Date - Header field value
                     dDats = new Date(req.data.data.PODate);
                     sUsableDate1 = `${dDats.getFullYear()}-${dDats.getMonth()+1}-${dDats.getDate()}T00:00`;
@@ -474,7 +513,7 @@ module.exports = class InvoiceService extends cds.ApplicationService {
                     // Building Item Data
                     for (let i = 0; i < req.data.data.Items.length; i++) {
                         const element = req.data.data.Items[i];
-                        
+
                         oTempItem = {
                             "FiscalYear": element.FiscalYear,
                             "SupplierInvoiceItem": element.ReferenceDocumentItem,
@@ -516,7 +555,7 @@ module.exports = class InvoiceService extends cds.ApplicationService {
                         path: "A_SupplierInvoice",
                         headers: {
                             "contentType": "application/json",
-                            "x-Requested-With" : "X"
+                            "x-Requested-With": "X"
                         },
                         data: oHeaderData
                     });
@@ -525,7 +564,7 @@ module.exports = class InvoiceService extends cds.ApplicationService {
                     // Invoice Number created successfully ? Yes
                     if (oS4Resp.SupplierInvoice !== undefined && oS4Resp.SupplierInvoice !== '' && oS4Resp.SupplierInvoice !== null) {
                         console.log("Invoice Created Successfully : ", oS4Resp.SupplierInvoice);
-                        
+
                         // Update the status in the execution log table
                         req.data.data.CreatedInvNumber = oS4Resp.SupplierInvoice;
                         req.data.data.StatusCode = "61";
@@ -536,45 +575,62 @@ module.exports = class InvoiceService extends cds.ApplicationService {
                         // console.log(oRecord);
 
                         // Update the record of processflowID with invoice number from S/4 System
-                        oResp = await UPDATE `db.tables.InvoiceHeader` 
-                                        .set({StatusCode : req.data.data.StatusCode, Message : 'Invoice Created', CreatedInvNumber : req.data.data.CreatedInvNumber }) 
-                                        .where({ProcessFlowID : req.data.data.ProcessFlowID});
+                        oResp = await UPDATE `db.tables.InvoiceHeader`
+                            .set({
+                                StatusCode: req.data.data.StatusCode,
+                                Message: 'Invoice Created',
+                                CreatedInvNumber: req.data.data.CreatedInvNumber
+                            })
+                            .where({
+                                ProcessFlowID: req.data.data.ProcessFlowID
+                            });
                         console.log("Saved record", oResp);
 
                         return {
-                            StatusCode : "61",
-                            Message : "Invoice Created and Updated Table Record",
-                            RecordUpdated : oResp
+                            StatusCode: "61",
+                            Message: "Invoice Created and Updated Table Record",
+                            RecordUpdated: oResp
                         };
-                    } 
+                    }
                     // No
                     else {
 
                         // Update the Status as 'Failed'
-                        oResp = await UPDATE `db.tables.InvoiceHeader` 
-                                    .set({StatusCode : '60', Message : 'Inv.Posting failed'}) 
-                                    .where({ProcessFlowID : req.data.data.ProcessFlowID});
+                        oResp = await UPDATE `db.tables.InvoiceHeader`
+                            .set({
+                                StatusCode: '60',
+                                Message: 'Inv.Posting failed'
+                            })
+                            .where({
+                                ProcessFlowID: req.data.data.ProcessFlowID
+                            });
 
                         // Send Failed Response
                         return {
-                            StatusCode : "60",
-                            Message : "Invoice Creation failed! and Updated the status",
-                            RecordUpdated : oResp
+                            StatusCode: "60",
+                            Message: "Invoice Creation failed! and Updated the status",
+                            RecordUpdated: oResp
                         };
                     }
-                } 
+                }
                 // Invoice Creation Rejected
                 else {
                     // Update the record of processflowID with Status message as 'Rejected'
-                    oResp = await UPDATE `db.tables.InvoiceHeader` 
-                                .set({StatusCode : req.data.data.StatusCode, Message : req.data.data.Message, CreatedInvNumber : "" }) 
-                                .where({ProcessFlowID : req.data.data.ProcessFlowID});
+                    oResp = await UPDATE `db.tables.InvoiceHeader`
+                        .set({
+                            StatusCode: req.data.data.StatusCode,
+                            Message: req.data.data.Message,
+                            CreatedInvNumber: ""
+                        })
+                        .where({
+                            ProcessFlowID: req.data.data.ProcessFlowID
+                        });
                     console.log("Saved Rejected status in the record", oResp);
 
                     return {
-                        StatusCode : "54",
-                        Message : "Execution log updated with status Rejected",
-                        RecordUpdated : oResp
+                        StatusCode: "54",
+                        Message: "Execution log updated with status Rejected",
+                        RecordUpdated: oResp
                     };
                 }
             } catch (err) {
