@@ -330,7 +330,7 @@ module.exports = class InvoiceService extends cds.ApplicationService {
                     // Return Failed Response
                     return {
                         StatusCode: "10",
-                        Message: `Accuracy check failed! Saved the record ID:${INSERT_resp.query.INSERT.entries[0].ID}`
+                        Message: `Accuracy check failed! Saved the record`
                     };
                 } catch (err) {
                     console.log("Error while Inserting Execution Log data : ", err)

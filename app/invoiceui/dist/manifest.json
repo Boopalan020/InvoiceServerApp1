@@ -164,7 +164,28 @@
                                 }
                             },
                             "contextPath": "/InvoiceHeader",
-                            "editableHeaderContent": false
+                            "editableHeaderContent": false,
+                            "controlConfiguration": {
+                                "Items/@com.sap.vocabularies.UI.v1.LineItem#Materials": {
+                                    "columns": {
+                                        "DataField::Material": {
+                                            "width": "8em"
+                                        },
+                                        "DataField::QuantityUnit": {
+                                            "width": "5em"
+                                        },
+                                        "DataField::UnitPriceCur": {
+                                            "width": "8em"
+                                        },
+                                        "DataField::NetamountCur": {
+                                            "width": "8em"
+                                        },
+                                        "DataField::Message": {
+                                            "width": "8em"
+                                        }
+                                    }
+                                }
+                            }
                         }
                     },
                     "controlAggregation": "midColumnPages",
