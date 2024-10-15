@@ -109,6 +109,11 @@ annotate service.InvoiceHeader with @(
             ID : 'AutomationInfo',
             Target : '@UI.FieldGroup#AutomationInfo',
         },
+        {
+            $Type : 'UI.ReferenceFacet',
+            ID : 'overall_ac',
+            Target : '@UI.Chart#overall_ac',
+        },
     ],
     UI.DataPoint #Message : {
         $Type : 'UI.DataPointType',
@@ -292,6 +297,26 @@ annotate service.InvoiceHeader with @(
             Determining : false,
         },
     ],
+    UI.DataPoint #overall_ac : {
+        Value : overall_ac,
+        TargetValue : overall_target,
+        Criticality : overall_acc,
+    },
+    UI.Chart #overall_ac : {
+        ChartType : #Donut,
+        Title : 'Overall Accuracy',
+        Measures : [
+            overall_ac,
+        ],
+        MeasureAttributes : [
+            {
+                DataPoint : '@UI.DataPoint#overall_ac',
+                Role : #Axis1,
+                Measure : overall_ac,
+            },
+        ],
+        Description : 'of all Key Fields',
+    },
 );
 
 annotate service.InvoiceItems with @(

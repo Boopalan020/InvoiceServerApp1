@@ -119,7 +119,7 @@ service InvoiceService
 // annotate InvoiceService with @(requires: 'Invoice_Admin');
 
 
-// Entending the Entities - Delta
+// Extending the Entities - Delta
 extend Tables.InvoiceHeader with {
     Criticality_code : Integer = case 
                                     when ( StatusCode = '10' or StatusCode = '20' or StatusCode = '30' or StatusCode = '60' or StatusCode = '54' ) then 1
@@ -131,29 +131,36 @@ extend Tables.InvoiceHeader with {
     PONumber_ac_text : String = PONumber_ac || ' %';
     PONumber_acc : Integer = case 
                                 when ( PONumber_ac < '80' ) then 1
-                                else 5
+                                else 3
                             end;
     SupplierName_ac_text : String = SupplierName_ac || ' %';
     SupplierName_acc : Integer = case 
                                     when ( SupplierName_ac < '80' ) then 1
-                                    else 5
+                                    else 3
                                 end;
     SupInvNumber_ac_text : String = SupInvNumber_ac || ' %';
     SupInvNumber_acc : Integer = case 
                                     when ( SupInvNumber_ac < '80' ) then 1
-                                    else 5
+                                    else 3
                                 end;
     Curr_ac_text : String = Curr_ac || ' %';
     Curr_acc : Integer = case 
                             when ( Curr_ac < '80' ) then 1
-                            else 5
+                            else 3
                         end;
     GrossAmount_ac_text : String = GrossAmount_ac || ' %';
     GrossAmount_acc : Integer = case 
                             when ( GrossAmount_ac < '80' ) then 1
-                            else 5
+                            else 3
                         end;
     SupNoName : String = SupplierNumber || '-' || SupplierName @Common.Label : 'Supplier';
+    overall_ac : Integer;
+    overall_acc : Integer = case 
+                                when ( overall_ac < 80 and overall_ac > 60 ) then 2
+                                when ( overall_ac < 60 ) then 1
+                                else 3
+                            end;
+    overall_target : Integer = 100;
 
 };
 
@@ -165,27 +172,27 @@ extend Tables.Items with {
     MatNum_ac_text : String = MatNum_ac || ' %';
     MatNum_acc : Integer = case 
                             when ( MatNum_ac < '80' ) then 1
-                            else 5
+                            else 3
                         end;
     Quantity_ac_text : String = Quantity_ac || ' %';
     Quantity_acc : Integer = case 
                             when ( Quantity_ac < '80' ) then 1
-                            else 5
+                            else 3
                         end;
     UnitPrice_ac_text : String = UnitPrice_ac || ' %';
     UnitPrice_acc : Integer = case 
                             when ( UnitPrice_ac < '80' ) then 1
-                            else 5
+                            else 3
                         end;
     UoM_ac_text : String = UoM_ac || ' %';
     UoM_acc : Integer = case 
                             when ( UoM_ac < '80' ) then 1
-                            else 5
+                            else 3
                         end;
     NetAmount_ac_text : String = NetAmount_ac || ' %';
     NetAmount_acc : Integer = case 
                             when ( NetAmount_ac < '80' ) then 1
-                            else 5
+                            else 3
                         end;
     Material : String = MaterialNumber || ''                        @Common.Label : 'Material';
     QuantityUnit : String = Quantity || ' ' || UoM                  @Common.Label : 'Quantity';

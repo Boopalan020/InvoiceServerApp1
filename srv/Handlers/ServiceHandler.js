@@ -39,30 +39,95 @@ module.exports = class InvoiceService extends cds.ApplicationService {
             // } else {
             //     console.log("No workflow has been triggered");
             // }
+            let oDB, aHeaders, oHeader, aPreviouseItems, oPrevItem,
+                { InvoiceHeader, InvoiceItems } = cds.entities('tablemodel.srv.InvoiceService');
 
-            // Updaing the Accuracy to 99%, on saving the record
-            for (const item of req.data.Items) {
-                item.MatNum_ac = '99';
-                item.Quantity_ac = '99';
-                item.UoM_ac = '99';
-                item.UnitPrice_ac = '99';
-                item.NetAmount_ac = '99';
+            try {
+                // DB - Service
+                oDB = await cds.connect.to('db');
+                console.log(oDB);
+
+                // Get the Header details
+                aHeaders = await oDB.run(SELECT.from(InvoiceHeader).where({
+                    ID: req.data.ID
+                }));
+                console.log(aHeaders);
+
+                // Get the item details
+                aPreviouseItems = await SELECT.from(InvoiceItems).where({
+                    Parent_ID : req.data.ID
+                });
+                console.log(aPreviouseItems);
+
+                // Changing the accuracy to 99%, if the field value has been touched
+                req.data.PONumber_ac = aHeaders[0].PONumber !== req.data.PONumber ? '99' : req.data.PONumber_ac ;
+                req.data.Curr_ac = aHeaders[0].Currency !== req.data.Currency ? '99' : req.data.Curr_ac ;
+                req.data.GrossAmount_ac = aHeaders[0].GrossAmount !== req.data.GrossAmount ? '99' : req.data.GrossAmount_ac ;
+                req.data.SupplierName_ac = aHeaders[0].SupplierName !== req.data.SupplierName ? '99' : req.data.SupplierName_ac ;
+                req.data.PODate_ac = aHeaders[0].PODate !== req.data.PODate ? '99' : req.data.PODate_ac ;
+                req.data.SupInvNumber_ac = aHeaders[0].SupInvNumber !== req.data.SupInvNumber ? '99' : req.data.SupInvNumber_ac ;
+
+                // Updaing the Accuracy to 99%, if the field value has been touched
+                for (const item of req.data.Items) {
+                    oPrevItem = aPreviouseItems.find((itm) => itm.ID == item.ID);
+
+                    item.MatNum_ac = oPrevItem.MaterialNumber !== item.MaterialNumber ? '99' : item.MatNum_ac;
+                    item.Quantity_ac = oPrevItem.Quantity !== item.Quantity ? '99' : item.Quantity_ac;
+                    item.UoM_ac = oPrevItem.UoM !== item.UoM ? '99' : item.UoM_ac;
+                    item.UnitPrice_ac = oPrevItem.UnitPrice !== item.UnitPrice ? '99' : item.UnitPrice_ac;
+                    item.NetAmount_ac = oPrevItem.NetAmount !== item.NetAmount ? '99' : item.NetAmount_ac;
+                }
+                
+                // Changing the status
+                req.data.StatusCode = 'S';
+                req.data.Message = 'Saved';
+
+            } catch (err) {
+                console.log("Error --> ", err);
             }
+        });
 
-            // Changing the accuracy to 99%
-            req.data.PONumber_ac = '99';
-            req.data.Curr_ac = '99';
-            req.data.GrossAmount_ac = '99';
-            req.data.SupplierName_ac = '99';
-            req.data.PODate_ac = '99';
-            req.data.SupInvNumber_ac = '99';
+        // Logic while reading the Header Entity
+        this.after("READ", "InvoiceHeader", async (data) => {
+            console.log('Read Data ====>', data);
 
-            // Changing the status
-            req.data.StatusCode = 'S';
-            req.data.Message = 'Saved';
+            let oDB, aHeaders, oHeader, Items, aItem, iOverall_ac = 0, iOverall_item_ac = 0, iAvg_Counter = 0,
+                { InvoiceHeader, InvoiceItems } = cds.entities('tablemodel.srv.InvoiceService');
 
-            console.log("Correction Accuracy :", req.data);
+            try {
+                // DB - Service
+                oDB = await cds.connect.to('db');
+                console.log(oDB);
 
+                // Get the Header details
+                aHeaders = await oDB.run(SELECT.from(InvoiceHeader));
+
+                // Get the item details
+                Items = await SELECT.from(InvoiceItems);
+                console.log(Items);
+
+                // Loop the fetched header details and calculate the overall accuracy percentage
+                for (const d of data) {
+                    oHeader = aHeaders.find((head) => head.ID == d.ID);
+                    aItem = Items.filter((it) => it.Parent_ID == d.ID);
+                    console.log("Item Found --> ",aItem);
+
+                    iOverall_ac = parseFloat(oHeader.PONumber_ac) + parseFloat(oHeader.SupInvNumber_ac) + parseFloat(oHeader.GrossAmount_ac) + parseFloat(oHeader.Curr_ac);
+                    iAvg_Counter = 4;
+                    iOverall_item_ac = 0;
+
+                    for (const item of aItem) {
+                        iOverall_item_ac += (parseFloat(item.MatNum_ac) + parseFloat(item.Quantity_ac) + parseFloat(item.UoM_ac) + parseFloat(item.NetAmount_ac));
+                        iAvg_Counter += 4;
+                    }
+                    iOverall_ac = (iOverall_ac + iOverall_item_ac) / iAvg_Counter;
+                    console.log(`Overall Accuracy for ${d.ID} is ${iOverall_ac}`);
+                    d.overall_ac = parseInt(iOverall_ac.toFixed(2));
+                    console.log(d.overall_ac);
+                }
+            } catch (err) {
+                console.log("Error in this.after(\"READ\", \"InvoiceHeader\", async (data))", err);
+            }
         });
 
 

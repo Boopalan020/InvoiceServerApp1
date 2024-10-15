@@ -4,7 +4,7 @@ Content-Type: application/json
 
 {
     "data": {
-        "PONumber": "4500001809",
+        "PONumber": "4500001806",
         "MailDateTime": "2024-09-30T22:13:28+05:30",
         "SupplierMail": "Sriram@itresonance.com",
         "MailSubject": "FW: invoice",
@@ -19,14 +19,14 @@ Content-Type: application/json
         "Message": "",
         "ProcessFlowID": "",
         "SupplierName_ac": "90.22",
-        "PONumber_ac": "75.32",
+        "PONumber_ac": "90",
         "PODate_ac": "91.62",
         "Curr_ac": "92.79",
         "SupInvNumber_ac": "91.32",
         "GrossAmount_ac": "90.61",
         "Items": [
             {
-                "PONumber": "4500001809",
+                "PONumber": "4500001806",
                 "MaterialNumber": "TG0011",
                 "Quantity": "10",
                 "UoM": "H87",
@@ -39,7 +39,7 @@ Content-Type: application/json
                 "NetAmount_ac": "90.56"
             },
             {
-                "PONumber": "4500001809",
+                "PONumber": "4500001806",
                 "MaterialNumber": "TG0012",
                 "Quantity": "10",
                 "UoM": "H87",
