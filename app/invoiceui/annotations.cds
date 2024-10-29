@@ -6,8 +6,8 @@ annotate service.InvoiceHeader with @(
     odata.draft.enabled,
     UI.DeleteHidden : { 
         $edmJson: {               
-            $Or: [  { $Eq: [ { $Path: 'StatusCode' }, '52'  ] },
-                    { $Eq: [ { $Path: 'StatusCode' }, '61'  ] }         
+            $Or: [  { $Eq: [ { $Path: 'StatusCode/code' }, '61'  ] },
+                    { $Eq: [ { $Path: 'StatusCode/code' }, '62'  ] }         
             ]
         }
      },
@@ -15,8 +15,8 @@ annotate service.InvoiceHeader with @(
         $edmJson: {               
         $If: [
                 {                         
-                    $Or: [  { $Eq: [ { $Path: 'StatusCode' }, '52'  ] },
-                            { $Eq: [ { $Path: 'StatusCode' }, '61'  ] }         
+                    $Or: [  { $Eq: [ { $Path: 'StatusCode/code' }, '61'  ] },
+                            { $Eq: [ { $Path: 'StatusCode/code' }, '62'  ] }         
                     ]
                 },
                 true,
@@ -25,10 +25,9 @@ annotate service.InvoiceHeader with @(
         } 
     },
     UI.SelectionFields : [
-        Comp_Code,
         PONumber,
-        SupplierMail,
-        SupInvNumber,
+        SupplierNumber,
+        StatusCode.code,
     ],
     UI.LineItem : [
         {
@@ -71,18 +70,36 @@ annotate service.InvoiceHeader with @(
             Label : '{i18n>GrossAmount}',
         },
         {
-            $Type : 'UI.DataField',
-            Value : Message,
-            ![@UI.Importance] : #Medium,
-            Label : '{i18n>Message}',
-            Criticality : Criticality_code,
-        },
-        {
             $Type : 'UI.DataFieldForAction',
             Action : 'tablemodel.srv.InvoiceService.threeWayCheckUI',
             Label : '{i18n>CheckSend1}',
-        },   
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : StatusCode_code,
+            Criticality : StatusCode.status_critics,
+            CriticalityRepresentation : #WithIcon,
+            Label : 'Status',
+            ![@UI.Importance] : #Medium
+        },
+         
     ],
+    UI.FilterFacets: [
+        {
+            Target : '@UI.FieldGroup#FilterFacet1',
+            Label : '{i18n>Allowed Filters}',
+        },
+    ],
+
+    UI.FieldGroup #FilterFacet1 : {
+        Data : [
+            {Value: Comp_Code},
+            {Value: PONumber},
+            {Value: SupplierNumber},
+            {Value: Message},
+            {Value: Currency},
+        ]
+    },
     UI.HeaderInfo : {
         TypeName : '{i18n>Invoice}',
         TypeNamePlural : '{i18n>Invoices}',
@@ -119,7 +136,6 @@ annotate service.InvoiceHeader with @(
         $Type : 'UI.DataPointType',
         Value : Message,
         Title : 'Message',
-        Criticality : Criticality_code,
         ![@Common.QuickInfo] : 'Refers to what is the status by the automation',
     },
     UI.Facets : [
@@ -271,12 +287,11 @@ annotate service.InvoiceHeader with @(
             {
                 $Type : 'UI.DataField',
                 Value : Message,
-                Criticality : Criticality_code,
+                Criticality : StatusCode.status_critics,
             },
             {
                 $Type : 'UI.DataField',
                 Value : CreatedInvNumber,
-                Criticality : Criticality_code,
                 CriticalityRepresentation : #WithoutIcon,
             },
             {
@@ -592,4 +607,157 @@ annotate service.InvoiceItems with {
 annotate service.InvoiceItems with {
     Message @Common.FieldControl : #ReadOnly
 };
+
+annotate service.InvoiceHeader with {
+    PONumber @(Common.ValueList : {
+            $Type : 'Common.ValueListType',
+            CollectionPath : 'PurchaseOrders',
+            Parameters : [
+                {
+                    $Type : 'Common.ValueListParameterInOut',
+                    LocalDataProperty : PONumber,
+                    ValueListProperty : 'PurchaseOrder',
+                },
+                {
+                    $Type : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty : 'CreatedByUser',
+                },
+                {
+                    $Type : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty : 'CreationDate',
+                },
+                {
+                    $Type : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty : 'CompanyCode',
+                },
+                {
+                    $Type : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty : 'PurchaseOrderType',
+                },
+            ],
+            Label : 'Purchase Order - Help',
+            PresentationVariantQualifier : 'vh_InvoiceHeader_PONumber',
+        },
+        Common.ValueListWithFixedValues : false
+)};
+
+annotate service.PurchaseOrders with @(
+    UI.PresentationVariant #vh_InvoiceHeader_PONumber : {
+        $Type : 'UI.PresentationVariantType',
+        SortOrder : [
+            {
+                $Type : 'Common.SortOrderType',
+                Property : PurchaseOrder,
+                Descending : false,
+            },
+        ],
+    }
+);
+annotate service.InvoiceHeader with {
+    StatusCode @(
+        Common.Label : 'StatusCode',
+        Common.ValueList : {
+            $Type : 'Common.ValueListType',
+            CollectionPath : 'Status',
+            Parameters : [
+                {
+                    $Type : 'Common.ValueListParameterInOut',
+                    LocalDataProperty : StatusCode_code,
+                    ValueListProperty : 'code',
+                },
+                {
+                    $Type : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty : 'name',
+                },
+            ],
+            Label : 'Status',
+        },
+        Common.ValueListWithFixedValues : true,
+        Common.Text : {
+            $value : StatusCode.name,
+            ![@UI.TextArrangement] : #TextOnly
+        },
+    )
+};
+
+annotate service.Status with {
+    code @(
+        Common.Text : {
+            $value : name,
+            ![@UI.TextArrangement] : #TextOnly
+        },
+        Common.Label : 'Status',
+        Common.ValueList : {
+            $Type : 'Common.ValueListType',
+            CollectionPath : 'Status',
+            Parameters : [
+                {
+                    $Type : 'Common.ValueListParameterInOut',
+                    LocalDataProperty : code,
+                    ValueListProperty : 'code',
+                },
+                {
+                    $Type : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty : 'name',
+                },
+            ],
+            Label : 'Status',
+            PresentationVariantQualifier : 'vh_Status_code',
+        },
+        Common.ValueListWithFixedValues : true,
+    )
+};
+
+annotate service.InvoiceHeader with {
+    SupplierNumber @(Common.ValueList : {
+            $Type : 'Common.ValueListType',
+            CollectionPath : 'Suppliers',
+            Parameters : [
+                {
+                    $Type : 'Common.ValueListParameterInOut',
+                    LocalDataProperty : SupplierNumber,
+                    ValueListProperty : 'Supplier',
+                },
+                {
+                    $Type : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty : 'SupplierFullName',
+                },
+                {
+                    $Type : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty : 'Region',
+                },
+                {
+                    $Type : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty : 'CreationDate',
+                },
+                {
+                    $Type : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty : 'Country',
+                },
+                {
+                    $Type : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty : 'SupplierPlant',
+                },
+            ],
+            Label : 'Supplier',
+        },
+        Common.ValueListWithFixedValues : false
+)};
+
+annotate service.Suppliers with {
+    Supplier @Common.Text : SupplierFullName
+};
+
+annotate service.Status with @(
+    UI.PresentationVariant #vh_Status_code : {
+        $Type : 'UI.PresentationVariantType',
+        SortOrder : [
+            {
+                $Type : 'Common.SortOrderType',
+                Property : code,
+                Descending : false,
+            },
+        ],
+    }
+);
 

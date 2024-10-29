@@ -18,7 +18,7 @@
             </f:DynamicPageHeader>
         </f:header>
         <f:content>
-            <macros:Table id="table-1" metaPath="@com.sap.vocabularies.UI.v1.LineItem" filterBar="FilterBar1" readOnly="true" enableAutoColumnWidth="true" header="List of Mails" headerVisible="true" isSearchable="true" selectionMode="Multi" type="ResponsiveTable" personalization="false"/>
+            <macros:Table id="table-1" metaPath="@com.sap.vocabularies.UI.v1.LineItem" filterBar="FilterBar1" readOnly="true" enableAutoColumnWidth="true" header="List of Mails" headerVisible="true" isSearchable="true" selectionMode="Multi" type="ResponsiveTable" personalization="false" rowCountMode="Auto" variantManagement="Page" enableExport="false"/>
         </f:content>
     </f:DynamicPage>
 </mvc:View>

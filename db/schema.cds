@@ -1,6 +1,9 @@
 namespace db.tables;
 
-using { cuid, managed } from '@sap/cds/common';
+using { cuid, managed, sap.common.CodeList as CodeList } from '@sap/cds/common';
+using { Attachments } from '@cap-js/sdm';
+using { poextsrv.A_PurchaseOrder as A_PurchaseOrder } from '../srv/external/poextsrv';
+using { suppl_api.ZC_Supplier_1 as suppl_api } from '../srv/external/suppl_api';
 
 entity InvoiceHeader : cuid, managed {
     key ID : UUID;
@@ -16,8 +19,9 @@ entity InvoiceHeader : cuid, managed {
     PODate : Date                                            @Common.Label : 'Pur.Ord Date';
     Currency : String(3)            default ''               @Common.Label : 'Currency';
     GrossAmount : String(15)        default ''               @Common.Label : 'Gross Amount';
-    StatusCode : String(3)          default ''               @Common.Label : 'Status';
+    StatusCode : Association to one Status                   @Common.Label : 'Status';
     Message : String(100)           default ''               @Common.Label : 'Message';
+    Reason : String                 default ''               @Common.Label : 'Error-Reason';
     ProcessFlowID : String(40)      default ''               @Common.Label : 'Workflow ID';
     SupplierName_ac : String(5)     default ''               @Common.Label : 'Supplier Name - Accuracy';
     PONumber_ac : String(5)         default ''               @Common.Label : 'Pur.Ord Number - Accuracy';
@@ -27,7 +31,15 @@ entity InvoiceHeader : cuid, managed {
     GrossAmount_ac : String(5)      default ''               @Common.Label : 'Gross Amount - Accuracy';
 
     Items : Composition of many Items on Items.Parent = $self;
+    // // Below part is on development
+    // attachments : Composition of many C_Attachment on attachments.Parent = $self;
+    attachments : Composition of many Attachments;
 }
+
+// // Below part is on development
+// entity C_Attachment : Attachments {
+//     key Parent : Association to one InvoiceHeader;
+// };
 
 entity Items : cuid {
     key ID : UUID;  
@@ -51,3 +63,36 @@ entity Items : cuid {
     ReferenceDocumentItem : String(20)          default ''      @Common.Label : 'Ref.Doc.Item';
     FiscalYear : String(5)                      default ''      @Common.Label : 'Fiscal Year';
 }
+
+// For ValueHelp Feature - Purchase Order Number
+entity PurchaseOrderTable as projection on A_PurchaseOrder {
+    key PurchaseOrder       @(Common.Label : 'Purchase Order'),
+    PurchaseOrderDate       @(Common.Label : 'Order Date'),
+    PurchaseOrderType       @(Common.Label : 'Order Type'),
+    CompanyCode             @(Common.Label : 'Comp.Code'),
+    CreatedByUser           @(Common.Label : 'Created By'),
+    CreationDate            @(Common.Label : 'Created Date'),
+    Supplier                @(Common.Label : 'Supplier')
+};
+
+// For ValueHelp Feature - Supplier Number
+entity Supplier as projection on suppl_api {
+    *
+};
+
+entity Status : CodeList {
+    key code : String(10) enum {
+        Failed = '60';
+        InProgress = '61';
+        Completed = '62';
+        Error = '63';
+        Saved = '64';
+    };
+    status_critics : Integer enum {
+        Unknown = 0;
+        Red = 1;
+        Yellow = 2;
+        Green = 3;
+        Blue = 5;
+    }
+};

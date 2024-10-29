@@ -14,12 +14,18 @@ service InvoiceService
 
     entity InvoiceItems as projection on Tables.Items;
 
+    @cds.odata.valuelist
+    entity PurchaseOrders as projection on Tables.PurchaseOrderTable;
+
+    @cds.odata.valuelist
+    entity Suppliers as projection on Tables.Supplier;
+
     type threeWayCheck_RespObject {
         StatusCode : String;
         Flag : String;
         Message : String;
         RecordUpdated : String;
-    }
+    };
 
     // -------------------- Three Way Check - Action Import
     // Item Structure
@@ -36,7 +42,15 @@ service InvoiceService
         UnitPrice_ac : String(5);
         NetAmount_ac : String(5);
         Message : String;
-    }
+    };
+
+    // Attachment structure
+    type AttachmentObject {
+        content : LargeBinary;
+        name : String;
+        filename : String;
+        mimeType : String default 'application/pdf';
+    };
 
     // Header Structure
     type threeWayCheck_payload {
@@ -51,8 +65,9 @@ service InvoiceService
         PODate : Date;
         Currency : String(3);
         GrossAmount : String(15);
-        StatusCode : String(3);
+        StatusCode_code : String(3);
         Message : String;
+        Reason : String;
         ProcessFlowID : String(40);
         SupplierName_ac : String(5);
         PONumber_ac : String;
@@ -60,8 +75,9 @@ service InvoiceService
         Curr_ac : String(5);
         SupInvNumber_ac : String(5);
         GrossAmount_ac : String(5);
-        Items : array of ItemsObject_threewaycheck
-    }
+        Items : array of ItemsObject_threewaycheck;
+        attachments : array of  AttachmentObject;
+    };
     action threeWayCheck(data : threeWayCheck_payload) returns threeWayCheck_RespObject;
 
     // -------------------- Invoice Posting - Action Import
@@ -84,7 +100,7 @@ service InvoiceService
         ReferenceDocumentFiscalYear : String(20);
         ReferenceDocumentItem : String(20);
         FiscalYear : String(5);
-    }
+    };
 
     // Header Structure
     type invpost_payload {
@@ -100,8 +116,9 @@ service InvoiceService
         PODate : Date;
         Currency : String(3);
         GrossAmount : String(15);
-        StatusCode : String(3);
+        StatusCode_code : String(3);
         Message : String;
+        Reason : String;
         ProcessFlowID : String(40);
         SupplierName_ac : String(5);
         PONumber_ac : String;
@@ -110,8 +127,23 @@ service InvoiceService
         SupInvNumber_ac : String(5);
         GrossAmount_ac : String(5);
         Items : array of ItemsObject_invpost
-    }
+    };
     action PostInvoice(data : invpost_payload) returns threeWayCheck_RespObject;
+
+    type DynamicAppLauncher {
+        subtitle     : String;
+        title        : String;
+        icon         : String;
+        info         : String;
+        infoState    : String;
+        number       : Decimal(9, 2);
+        // numberDigits : Integer;
+        // numberFactor : String;
+        // numberState  : String;
+        // numberUnit   : String;
+        // stateArrow   : String;
+    };
+    function getTileInfo(tileType : String) returns DynamicAppLauncher;
 
 }
 
@@ -121,46 +153,39 @@ service InvoiceService
 
 // Extending the Entities - Delta
 extend Tables.InvoiceHeader with {
-    Criticality_code : Integer = case 
-                                    when ( StatusCode = '10' or StatusCode = '20' or StatusCode = '30' or StatusCode = '60' or StatusCode = '54' ) then 1
-                                    when ( StatusCode = '61' or StatusCode = 'S' ) then 3
-                                    when ( StatusCode = '52' ) then 2
-                                    when ( StatusCode = '50' ) then 5
-                                    else 0
-                                end;
-    PONumber_ac_text : String = PONumber_ac || ' %';
+    PONumber_ac_text : String = PONumber_ac || ' %' @Consumption.filter.hidden: true;
     PONumber_acc : Integer = case 
                                 when ( PONumber_ac < '80' ) then 1
                                 else 3
-                            end;
+                            end @Consumption.filter.hidden: true;
     SupplierName_ac_text : String = SupplierName_ac || ' %';
     SupplierName_acc : Integer = case 
                                     when ( SupplierName_ac < '80' ) then 1
                                     else 3
-                                end;
+                                end @Consumption.filter.hidden: true;
     SupInvNumber_ac_text : String = SupInvNumber_ac || ' %';
     SupInvNumber_acc : Integer = case 
                                     when ( SupInvNumber_ac < '80' ) then 1
                                     else 3
-                                end;
+                                end @Consumption.filter.hidden: true;
     Curr_ac_text : String = Curr_ac || ' %';
     Curr_acc : Integer = case 
                             when ( Curr_ac < '80' ) then 1
                             else 3
-                        end;
+                        end @Consumption.filter.hidden: true;
     GrossAmount_ac_text : String = GrossAmount_ac || ' %';
     GrossAmount_acc : Integer = case 
                             when ( GrossAmount_ac < '80' ) then 1
                             else 3
-                        end;
+                        end @Consumption.filter.hidden: true;
     SupNoName : String = SupplierNumber || '-' || SupplierName @Common.Label : 'Supplier';
     overall_ac : Integer;
     overall_acc : Integer = case 
                                 when ( overall_ac < 80 and overall_ac > 60 ) then 2
                                 when ( overall_ac < 60 ) then 1
                                 else 3
-                            end;
-    overall_target : Integer = 100;
+                            end @Consumption.filter.hidden: true;
+    overall_target : Integer = 100 @Consumption.filter.hidden: true;
 
 };
 

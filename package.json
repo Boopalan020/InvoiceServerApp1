@@ -7,6 +7,7 @@
   "private": true,
   "dependencies": {
     "@cap-js/hana": "^1",
+    "@cap-js/sdm": "^1.2.1",
     "@sap-cloud-sdk/http-client": "^3.21.0",
     "@sap-cloud-sdk/resilience": "^3.21.0",
     "@sap-cloud-sdk/util": "^3.21.0",
@@ -58,6 +59,26 @@
           "destination": "onprem",
           "path": "/sap/opu/odata/sap/API_SUPPLIERINVOICE_PROCESS_SRV"
         }
+      },
+      "poextsrv": {
+        "kind": "odata-v2",
+        "model": "srv/external/poextsrv",
+        "credentials": {
+          "destination": "onprem",
+          "path": "/sap/opu/odata/sap/API_PURCHASEORDER_PROCESS_SRV"
+        },
+        "csrf": true,
+        "csrfInBatch": true
+      },
+      "suppl_api": {
+        "kind": "odata-v2",
+        "model": "srv/external/suppl_api",
+        "credentials": {
+          "destination": "onprem",
+          "path": "/sap/opu/odata/sap/ZSBIND_SUPPL_1"
+        },
+        "csrf": true,
+        "csrfInBatch": true
       },
       "spa_api": {
         "kind": "rest",
