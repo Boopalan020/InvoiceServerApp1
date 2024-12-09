@@ -32,8 +32,8 @@ entity InvoiceHeader : cuid, managed {
 
     Items : Composition of many Items on Items.Parent = $self;
     // // Below part is on development
-    // attachments : Composition of many C_Attachment on attachments.Parent = $self;
-    attachments : Composition of many Attachments;
+    // attachments : Composition of many C_Attachment on attachments.Parent = $self; <--- uncomment to enable attachment feature
+    // attachments : Composition of many Attachments;
 }
 
 // // Below part is on development
