@@ -1,5 +1,6 @@
 using { tablemodel.srv.InvoiceService } from '../srv/services';
 
+// -------------------------- Entity for Monitoring App -----------------------------------------
 annotate InvoiceService.InvoiceHeader {
     
 } actions {
@@ -22,3 +23,4 @@ annotate InvoiceService.InvoiceHeader {
         
     );
 };
+// -------------------------- Entity for Monitoring App -----------------------------------------
