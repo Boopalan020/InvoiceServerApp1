@@ -3,7 +3,7 @@ using from '../../srv/services';
 using from '../../db/schema';
 
 annotate service.InvoiceHeader with @(
-    odata.draft.enabled,
+    odata.draft.enabled : true,
     UI.DeleteHidden : { 
         $edmJson: {               
             $Or: [  { $Eq: [ { $Path: 'StatusCode/code' }, '61'  ] },
@@ -679,6 +679,9 @@ annotate service.InvoiceHeader with {
         },
     )
 };
+
+annotate service.InvoiceHeader with @Common.SemanticKey: [PONumber];
+
 
 annotate service.Status with {
     code @(
