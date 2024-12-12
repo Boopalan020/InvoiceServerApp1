@@ -135,15 +135,15 @@ entity elementlist : CodeList {
 
 entity Statuscode_s : CodeList {
     key code : String(10) enum {
-            Active   = 'Active';
-            InActive = 'Inactive';
+            Active   = '101';
+            InActive = '102';
         }
 }
 
 entity Operands : CodeList {
     key code : String(10) enum {
-            Equals   = 'equals';
-            Contains = 'contains';
+            equals   = '301';
+            contains = '302';
         };
 }
 // -------------------------- Entity for Configuration App - Search Criteria -----------------------------------------

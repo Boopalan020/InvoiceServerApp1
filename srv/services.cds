@@ -303,6 +303,7 @@ extend Tables.Items with {
 
 
 // -------------------------- Entity for Configuration App - Search Criteria -----------------------------------------
+@path: '/SearchApp-srv'
 service SearchAppService {
     entity Searchheader as projection on Tables.Searchheader;
     entity Searchitem   as projection on Tables.Searchitem;
