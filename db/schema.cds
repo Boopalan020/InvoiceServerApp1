@@ -108,8 +108,8 @@ entity Status : CodeList {
 
 
 // -------------------------- Entity for Configuration App - Search Criteria -----------------------------------------
-entity Searchheader : cuid {
-    Name         : String(255)                          @Common.Label: 'Name';
+entity Searchheader : cuid, managed {
+    Name         : String(255)                          @Common.Label: 'User Name';
     Status       : Association to Statuscode_s          @Common.Label: 'Status';
     machine_name : String(100)                          @Common.Label: 'Machine Name';
     Items_s        : Composition of many Searchitem

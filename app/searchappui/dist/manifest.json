@@ -1,7 +1,7 @@
 {
     "_version": "1.65.0",
     "sap.app": {
-        "id": "ns.invoiceui",
+        "id": "ns.app.searchappui",
         "type": "application",
         "i18n": "i18n/i18n.properties",
         "applicationVersion": {
@@ -12,12 +12,12 @@
         "resources": "resources.json",
         "sourceTemplate": {
             "id": "@sap/generator-fiori:fpm",
-            "version": "1.15.0",
-            "toolsId": "57594eea-c65e-4bee-9328-c4cadcce83f7"
+            "version": "1.15.7",
+            "toolsId": "ca9de949-367c-415e-961f-48baf9ca6226"
         },
         "dataSources": {
             "mainService": {
-                "uri": "invoiceAutomation-srv/",
+                "uri": "SearchApp-srv/",
                 "type": "OData",
                 "settings": {
                     "annotations": [],
@@ -27,18 +27,14 @@
         },
         "crossNavigation": {
             "inbounds": {
-                "invoices-display": {
-                    "semanticObject": "invoices",
-                    "action": "display",
+                "SearchAppSem-Manage": {
+                    "semanticObject": "SearchAppSem",
+                    "action": "Manage",
                     "title": "{{flpTitle}}",
+                    "subTitle": "{{flpSubtitle}}",
                     "signature": {
                         "parameters": {},
                         "additionalParameters": "allowed"
-                    },
-                    "indicatorDataSource": {
-                        "dataSource": "mainService",
-                        "path": "getTileInfo(tileType='Completed')",
-                        "refresh": 10000
                     }
                 }
             }
@@ -63,13 +59,14 @@
     "sap.ui5": {
         "flexEnabled": true,
         "dependencies": {
-            "minUI5Version": "1.128.1",
+            "minUI5Version": "1.131.1",
             "libs": {
                 "sap.m": {},
                 "sap.ui.core": {},
                 "sap.fe.core": {},
-                "sap.fe.templates": {},
-                "sap.f": {}
+                "sap.fe.macros": {},
+                "sap.f": {},
+                "sap.fe.templates": {}
             }
         },
         "contentDensities": {
@@ -80,7 +77,7 @@
             "i18n": {
                 "type": "sap.ui.model.resource.ResourceModel",
                 "settings": {
-                    "bundleName": "ns.invoiceui.i18n.i18n"
+                    "bundleName": "ns.app.searchappui.i18n.i18n"
                 }
             },
             "": {
@@ -110,43 +107,34 @@
             },
             "routes": [
                 {
-                    "name": "InvoiceHeaderMain",
+                    "name": "SearchheaderMain",
                     "pattern": ":?query:",
                     "target": [
-                        "InvoiceHeaderMain"
+                        "SearchheaderMain"
                     ]
                 },
                 {
-                    "name": "InvoiceHeaderObjectPage",
-                    "pattern": "InvoiceHeader({InvoiceHeaderKey}):?query:",
+                    "name": "SearchheaderObjectPage",
+                    "pattern": "Searchheader({SearchheaderKey}):?query:",
                     "target": [
-                        "InvoiceHeaderMain",
-                        "InvoiceHeaderObjectPage"
-                    ]
-                },
-                {
-                    "name": "InvoiceHeader_ItemsObjectPage",
-                    "pattern": "InvoiceHeader({InvoiceHeaderKey})/Items({ItemsKey}):?query:",
-                    "target": [
-                        "InvoiceHeaderMain",
-                        "InvoiceHeaderObjectPage",
-                        "InvoiceHeader_ItemsObjectPage"
+                        "SearchheaderMain",
+                        "SearchheaderObjectPage"
                     ]
                 }
             ],
             "targets": {
-                "InvoiceHeaderMain": {
+                "SearchheaderMain": {
                     "type": "Component",
-                    "id": "InvoiceHeaderMain",
+                    "id": "SearchheaderMain",
                     "name": "sap.fe.core.fpm",
                     "options": {
                         "settings": {
-                            "viewName": "ns.invoiceui.ext.main.Main",
-                            "contextPath": "/InvoiceHeader",
+                            "viewName": "ns.app.searchappui.ext.main.Main",
+                            "contextPath": "/Searchheader",
                             "navigation": {
-                                "InvoiceHeader": {
+                                "Searchheader": {
                                     "detail": {
-                                        "route": "InvoiceHeaderObjectPage"
+                                        "route": "SearchheaderObjectPage"
                                     }
                                 }
                             }
@@ -155,60 +143,38 @@
                     "controlAggregation": "beginColumnPages",
                     "contextPattern": ""
                 },
-                "InvoiceHeaderObjectPage": {
+                "SearchheaderObjectPage": {
                     "type": "Component",
-                    "id": "InvoiceHeaderObjectPage",
+                    "id": "SearchheaderObjectPage",
                     "name": "sap.fe.templates.ObjectPage",
-                    "options": {
-                        "settings": {
-                            "navigation": {
-                                "Items": {
-                                    "detail": {
-                                        "route": "InvoiceHeader_ItemsObjectPage"
-                                    }
-                                }
-                            },
-                            "contextPath": "/InvoiceHeader",
-                            "editableHeaderContent": false,
-                            "controlConfiguration": {
-                                "Items/@com.sap.vocabularies.UI.v1.LineItem#Materials": {
-                                    "columns": {
-                                        "DataField::Material": {
-                                            "width": "8em"
-                                        },
-                                        "DataField::QuantityUnit": {
-                                            "width": "5em"
-                                        },
-                                        "DataField::UnitPriceCur": {
-                                            "width": "8em"
-                                        },
-                                        "DataField::NetamountCur": {
-                                            "width": "8em"
-                                        },
-                                        "DataField::Message": {
-                                            "width": "8em"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    },
                     "controlAggregation": "midColumnPages",
-                    "contextPattern": "/InvoiceHeader({InvoiceHeaderKey})"
-                },
-                "InvoiceHeader_ItemsObjectPage": {
-                    "type": "Component",
-                    "id": "InvoiceHeader_ItemsObjectPage",
-                    "name": "sap.fe.templates.ObjectPage",
                     "options": {
                         "settings": {
                             "navigation": {},
-                            "contextPath": "/InvoiceHeader/Items",
+                            "contextPath": "/Searchheader",
+                            "controlConfiguration": {
+                                "Items_s/@com.sap.vocabularies.UI.v1.LineItem#Settings": {
+                                    "columns": {
+                                        "DataField::elements1_code": {
+                                            "width": "13em"
+                                        },
+                                        "DataField::operand_code": {
+                                            "width": "13em"
+                                        }
+                                    },
+                                    "tableSettings": {
+                                        "disableCopyToClipboard": true,
+                                        "enablePaste": true,
+                                        "selectAll": true,
+                                        "selectionLimit": 0,
+                                        "type": "ResponsiveTable"
+                                    }
+                                }
+                            },
                             "editableHeaderContent": false
                         }
                     },
-                    "controlAggregation": "endColumnPages",
-                    "contextPattern": "/InvoiceHeader({InvoiceHeaderKey})/Items({ItemsKey})"
+                    "contextPattern": "/Searchheader({SearchheaderKey})"
                 }
             }
         },

@@ -129,7 +129,7 @@ service InvoiceService {
         Items            : array of ItemsObject_invpost
     };
 
-    action   PostInvoice(data : invpost_payload)         returns threeWayCheck_RespObject;
+    action   PostInvoice(data : invpost_payload) returns threeWayCheck_RespObject;
 
     type DynamicAppLauncher {
         subtitle  : String;
@@ -145,7 +145,7 @@ service InvoiceService {
     // stateArrow   : String;
     };
 
-    function getTileInfo(tileType : String)              returns DynamicAppLauncher;
+    function getTileInfo(tileType : String) returns DynamicAppLauncher;
 
 }
 
@@ -304,8 +304,19 @@ extend Tables.Items with {
 
 // -------------------------- Entity for Configuration App - Search Criteria -----------------------------------------
 @path: '/SearchApp-srv'
+@impl: '/srv/Handlers/SearchAppHandler.js'
 service SearchAppService {
+
     entity Searchheader as projection on Tables.Searchheader;
     entity Searchitem   as projection on Tables.Searchitem;
+    
+    type ty_search_item {
+        element : String(50);
+        operand   : String(50);
+        value     : String(50);
+    };
+
+    function getSearchConfig(username:String,machinename:String) returns array of ty_search_item;
+
 }
 // -------------------------- Entity for Configuration App - Search Criteria -----------------------------------------

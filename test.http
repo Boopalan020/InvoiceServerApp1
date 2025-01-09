@@ -145,3 +145,33 @@ POST http://localhost:4004/invoiceAutomation-srv/InvoiceHeader(ID='141547df-4978
 Content-Type: application/json
 
 {}
+
+###
+POST http://localhost:4004/SearchApp-srv/Searchheader
+Content-Type: application/json
+
+{
+    "Name": "Sakthi",
+    "Status_code": "Active",
+    "createdAt": null,
+    "createdBy": "Boopalan",
+    "machine_name": "ITRLAP068",
+    "modifiedAt": null,
+    "modifiedBy": "Boopalan",
+    "HasActiveEntity": false,
+    "HasDraftEntity": true,
+    "IsActiveEntity": false
+}
+
+###
+GET http://localhost:4004/SearchApp-srv/Searchheader?$expand=Items_s
+Content-Type: application/json
+
+###
+GET http://localhost:4004/SearchApp-srv/getSearchConfig
+Content-Type: application/json
+
+{
+    "username" : "Boopalan",
+    "machinename" : "ITRLAP122"
+}

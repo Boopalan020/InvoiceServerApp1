@@ -3,7 +3,7 @@ using from '../../srv/services';
 using from '../../db/schema';
 
 annotate service.InvoiceHeader with @(
-    odata.draft.enabled : true,
+    odata.draft.enabled,
     UI.DeleteHidden : { 
         $edmJson: {               
             $Or: [  { $Eq: [ { $Path: 'StatusCode/code' }, '61'  ] },

@@ -97,19 +97,19 @@ module.exports = class InvoiceService extends cds.ApplicationService {
             try {
                 // DB - Service
                 oDB = await cds.connect.to('db');
-                console.log(oDB);
+                // console.log(oDB);
 
                 // Get the Header details
                 aHeaders = await oDB.run(SELECT.from(InvoiceHeader).where({
                     ID: req.data.ID
                 }));
-                console.log(aHeaders);
+                // console.log(aHeaders);
 
                 // Get the item details
                 aPreviouseItems = await SELECT.from(InvoiceItems).where({
                     Parent_ID : req.data.ID
                 });
-                console.log(aPreviouseItems);
+                // console.log(aPreviouseItems);
 
                 // Changing the accuracy to 99%, if the field value has been touched
                 req.data.PONumber_ac = aHeaders[0].PONumber !== req.data.PONumber ? '99' : req.data.PONumber_ac ;
@@ -142,7 +142,7 @@ module.exports = class InvoiceService extends cds.ApplicationService {
 
         // Logic while reading the Header Entity
         this.after("READ", "InvoiceHeader", async (data) => {
-            console.log('Read Data ====>', data);
+            // console.log('Read Data ====>', data);
 
             let oDB, aHeaders, oHeader, Items, aItem, iOverall_ac = 0, iOverall_item_ac = 0, iAvg_Counter = 0,
                 { InvoiceHeader, InvoiceItems } = cds.entities('tablemodel.srv.InvoiceService');
@@ -150,20 +150,20 @@ module.exports = class InvoiceService extends cds.ApplicationService {
             try {
                 // DB - Service
                 oDB = await cds.connect.to('db');
-                console.log(oDB);
+                // console.log(oDB);
 
                 // Get the Header details
                 aHeaders = await oDB.run(SELECT.from(InvoiceHeader));
 
                 // Get the item details
                 Items = await SELECT.from(InvoiceItems);
-                console.log("Total Items --> ",Items.length);
+                // console.log("Total Items --> ",Items.length);
 
                 // Loop the fetched header details and calculate the overall accuracy percentage
                 for (const d of data) {
                     oHeader = aHeaders.find((head) => head.ID == d.ID);
                     aItem = Items.filter((it) => it.Parent_ID == d.ID);
-                    console.log("Item Found --> ",aItem.length);
+                    // console.log("Item Found --> ",aItem.length);
 
                     iOverall_ac = parseFloat(oHeader.PONumber_ac) + parseFloat(oHeader.SupInvNumber_ac) + parseFloat(oHeader.GrossAmount_ac) + parseFloat(oHeader.Curr_ac);
                     iAvg_Counter = 4;
@@ -174,9 +174,9 @@ module.exports = class InvoiceService extends cds.ApplicationService {
                         iAvg_Counter += 4;
                     }
                     iOverall_ac = (iOverall_ac + iOverall_item_ac) / iAvg_Counter;
-                    console.log(`Overall Accuracy for ${d.ID} is ${iOverall_ac}`);
+                    // console.log(`Overall Accuracy for ${d.ID} is ${iOverall_ac}`);
                     d.overall_ac = parseInt(iOverall_ac.toFixed(2));
-                    console.log("Final Data --> ",d.overall_ac);
+                    // console.log("Final Data --> ",d.overall_ac);
                 }
             } catch (err) {
                 console.log("Error in this.after(\"READ\", \"InvoiceHeader\", async (data))", err);
@@ -776,6 +776,8 @@ module.exports = class InvoiceService extends cds.ApplicationService {
             }
         });
         ///////////////////////////////////// --- BPA - API call ////////////////////////////////////////////////////////////
+
+
 
         return super.init() // if no handlers found or after successful handler execution , proceed with 'managed' capability
     }

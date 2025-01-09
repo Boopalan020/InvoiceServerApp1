@@ -1,0 +1,6 @@
+<mvc:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:macros="sap.fe.macros"
+    xmlns:html="http://www.w3.org/1999/xhtml" controllerName="ns.app.searchappui.ext.view.SearchItemCust20">
+    <Page id="SearchItemCust20" title="{i18n>SearchItemCust20Title}">
+        <content></content>
+    </Page>
+</mvc:View>
