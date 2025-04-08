@@ -492,10 +492,11 @@ module.exports = class InvoiceService extends cds.ApplicationService {
                 console.log("Material Doc. data -->", aMaterialDocs);
             } catch (err) {
                 console.log("Error while fetching data", err);
+                HeaderData.Message = err.message;
             }
 
             // if Material Document Exists ? Yes
-            if (aMaterialDocs.length != 0) {
+            if (aMaterialDocs && aMaterialDocs.length != 0) {
 
                 HeaderData.Comp_Code = aMaterialDocs[0].Bukrs;
                 HeaderData.SupplierNumber = aMaterialDocs[0].Lifnr;
@@ -536,7 +537,7 @@ module.exports = class InvoiceService extends cds.ApplicationService {
             else {
                 bHFlag = 'X';
                 HeaderData.StatusCode_code = '60';
-                HeaderData.Message = `Check Failed!`;
+                // HeaderData.Message = `Check Failed!`;
                 HeaderData.Reason = `Invalid PO or No Mat.Doc. Exists for PO:${HeaderData.PONumber}`;
             }
 
@@ -598,7 +599,7 @@ module.exports = class InvoiceService extends cds.ApplicationService {
                 else
                     return {
                         StatusCode: HeaderData.StatusCode_code,
-                        Message: "Accuracy Passed -> 3-Way check Passed -> Sent for approval"
+                        Message: HeaderData.Message !== '' ? HeaderData.Message : "Accuracy Passed -> 3-Way check Passed -> Sent for approval"
                     };
             } catch (err) {
                 console.log("Error while saving execution Logs", err);
@@ -776,8 +777,6 @@ module.exports = class InvoiceService extends cds.ApplicationService {
             }
         });
         ///////////////////////////////////// --- BPA - API call ////////////////////////////////////////////////////////////
-
-
 
         return super.init() // if no handlers found or after successful handler execution , proceed with 'managed' capability
     }

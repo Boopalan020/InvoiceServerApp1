@@ -1,0 +1,234 @@
+const cds = require("@sap/cds");
+const {aHeaderFieldLists, aHeaderAccuracyLists, aItemFieldLists, aItemAccuracyLists} = require('../Utils/Fields');
+
+module.exports = class POAppService extends cds.ApplicationService {
+    async init() {
+        let hana_db,
+            aidox, {POHeader, PoItems} = cds.entities("tablemodel.srv.POServices");
+
+        try {
+            hana_db = await cds.connect.to("db");
+            aidox = await cds.connect.to("aidox");
+        } catch (err) {
+            console.log("Some instances are not connected properly", err);
+        }
+
+        this.on("extract_and_save_po_data", async (req) => { // console.log(req.data.data);
+            let payload = req.data.data,
+                options = {
+                    schemaName: "SAP_purchaseOrder_schema",
+                    clientId: "default",
+                    documentType: "purchaseOrder",
+                    templateID: "Invoice_JH_Template"
+                };
+
+            // convert base64 to BLOB
+            const blob = base64ToBlob(payload.content, payload.mimeType);
+
+            // Prepare Formdata
+            let formData = new FormData();
+
+            formData.append("file", blob, payload.filename);
+            formData.append("options", JSON.stringify(options));
+
+            let oAidox,
+                INSERT_resp,
+                inserted_id,
+                aHeaderValues,
+                aItemValues,
+                dbinsertedData,
+                oResp;
+
+            try {
+                oAidox = await aidox.send({
+                    method: "POST",
+                    path: "/document/jobs",
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                        Accept: "multipart/mixed"
+                    },
+                    data: formData
+                });
+                // console.log(oAidox);
+            } catch (err) {
+                console.log("Error at AI.Dox Call service section ->", err);
+                return {status: "Error", message: err.message};
+            }
+
+            if (oAidox !== null || oAidox !== undefined) {
+                let oHeaderData = {
+                    mailDateTime: payload.mailDateTime,
+                    emailid: payload.emailid,
+                    mailSubject: payload.mailSubject,
+                    dox_id: oAidox.id,
+                    extraction_status: "Pending"
+                };
+
+                // Update HANA Cloud database
+                try { // Save the status in the execution log table
+                    INSERT_resp = await INSERT.into("db.tables.POHeader").entries(oHeaderData);
+                    console.log("Data Insert Result :", INSERT_resp);
+                } catch (err) {
+                    console.log("Error while inserting data ->", err);
+                    return {status: "custom_error", message: err.message};
+                }
+
+                // insert statement record ID
+                if (INSERT_resp !== null || INSERT_resp !== undefined) {
+                    inserted_id = INSERT_resp.query.INSERT.entries[0].ID;
+                    console.log(inserted_id);
+                }
+
+                // Execute after 15 secs after uploading the document to DOX
+                sleep(15000).then(async () => { // Get the extraction result from the DOX service
+                    let oAidox_get;
+                    try {
+                        oAidox_get = await aidox.send({
+                                method: "GET", path: `/document/jobs/${
+                                oAidox.id
+                            }`
+                        });
+                        console.log(oAidox_get);
+                    } catch (err) {
+                        console.log("Error in getting the extracted values from DOX service ->", err);
+                        return {status: "Error in getting the extracted values from DOX service", message: err.message};
+                    }
+                    if (oAidox_get.status === "DONE") { // Hit the DOX api to get the schema structure using the schema ID
+                        let oDox_schema,
+                            sSchemaId = "fbab052e-6f9b-4a5f-b42f-29a8162eb1bf"; // Purchase Order schema
+                        try {
+                            oDox_schema = await aidox.send({method: "GET", path: `/schemas/${sSchemaId}?clientId=default`});
+                        } catch (err) {
+                            console.log("Error at taking schema structure ->", err);
+                            return {status: "Error at taking schema structure", message: err.message};
+                        }
+
+                        if (oDox_schema !== null || oDox_schema !== undefined) {
+                            if (oDox_schema.hasOwnProperty("headerFields")) {
+                                console.log("Reading header fields using structure");
+
+                                // Assign the extracted headerfield for search
+                                aHeaderValues = oAidox_get ?.extraction ?.headerFields;
+                                console.log(aHeaderValues);
+
+                                // iterate the Header structure to find the values from extracted data
+                                for (const key in oDox_schema.headerFields) {
+                                    if (Object.prototype.hasOwnProperty.call(oDox_schema.headerFields, key)) {
+                                        const schemaElement = oDox_schema.headerFields[key];
+
+                                        if (schemaElement.hasOwnProperty("name") && aHeaderFieldLists.includes(schemaElement.name)) {
+                                            console.log('Header schema Element -->', schemaElement);
+
+                                            // Find the matched field from extraction result
+                                            let oExtracted = aHeaderValues.find(f => f ?.name === schemaElement.name);
+                                            if (oExtracted) {
+                                                oHeaderData[schemaElement.name] = (oExtracted ?.value).toString();
+
+                                                // Logic to include the accuracy fields that are maintained in table
+                                                let sAcc_property = schemaElement.name + "_ac";
+                                                if (aHeaderAccuracyLists.includes(sAcc_property)) {
+                                                    oHeaderData[sAcc_property] = (oExtracted ?.confidence * 100).toFixed(2).toString();
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Check if item field structure exists
+                            if (oDox_schema.hasOwnProperty("lineItemFields")) {
+                                console.log("Reading item fields using structure");
+                                let aNewItems = [];
+
+                                // Assign the extracted item fields for search
+                                aItemValues = oAidox_get ?.extraction ?.lineItems;
+                                console.log(aItemValues);
+
+                                for (let i = 0; i < aItemValues.length; i++) {
+                                    const oItem = aItemValues[i];
+                                    let oNewItem = {};
+
+                                    // iterate the Item structure to find the values from extracted data
+                                    for (const key in oDox_schema.lineItemFields) {
+                                        if (Object.prototype.hasOwnProperty.call(oDox_schema.lineItemFields, key)) {
+                                            const schemaElement = oDox_schema.lineItemFields[key];
+
+                                            if (schemaElement.hasOwnProperty("name") && aItemFieldLists.includes(schemaElement.name)) {
+                                                console.log('Element schema -->', schemaElement);
+
+                                                // Find the matched field from extraction result
+                                                let oExtracted = oItem.find(f => f ?.name === schemaElement.name);
+                                                if (oExtracted) {
+                                                    oNewItem[schemaElement.name] = (oExtracted ?.value).toString();
+
+                                                    // Logic to include the accuracy fields that are maintained in table
+                                                    let sAcc_property = schemaElement.name + "_ac";
+                                                    if (aItemAccuracyLists.includes(sAcc_property)) {
+                                                        oNewItem[sAcc_property] = (oExtracted ?.confidence * 100).toFixed(2).toString();
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    aNewItems.push(oNewItem);
+                                }
+                                oHeaderData['PoItems'] = aNewItems;
+                            }
+                            console.log("Complete data --> ", oHeaderData);
+                        }
+
+                        // Update the data table with the extracted values
+                        let UPDATE_resp;
+                        try {
+                            oHeaderData['extraction_status'] = 'Done';
+                            UPDATE_resp = await UPDATE(POHeader, inserted_id).with(oHeaderData) 
+                            ;
+                        } catch (err) {
+                            console.log("Error updating the table ->", err);
+                        }
+                    } else {
+                        console.log("DOX extraction status us still pending. Try refreshing from UI");
+                    }
+                });
+            } else {
+                console.log("error in uploading the document");
+                return {status: "custom_error", message: "Error in uploading the document"};
+            }
+
+            return {
+                id: oAidox.id != null ? oAidox.id : "",
+                status: "Success",
+                message: "Document submitted for data extraction"
+            };
+        });
+
+        /**
+     * Function to convert the base64 large string value to blob object
+     * @param {*} base64String - Base64 large string value
+     * @param {*} contentType - type of the content eg. PDF, jpeg, png
+     * @returns blob object
+     */
+        function base64ToBlob(base64String, contentType = "") {
+            const byteCharacters = atob(base64String);
+            const byteArrays = [];
+
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteArrays.push(byteCharacters.charCodeAt(i));
+            }
+
+            const byteArray = new Uint8Array(byteArrays);
+            return new Blob([byteArray], {type: contentType});
+        }
+
+        /**
+     * halt the execution for specified time period in milleseconds
+     * @param {*} ms - Mille-second value
+     * @returns resolved promise
+     */
+        function sleep(ms) {
+            return new Promise((resolve) => setTimeout(resolve, ms));
+        }
+
+        return super.init();
+    }
+};

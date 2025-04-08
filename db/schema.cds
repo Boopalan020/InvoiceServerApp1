@@ -34,7 +34,6 @@ entity InvoiceHeader : cuid, managed {
         Curr_ac          : String(5) default ''      @Common.Label: 'Currency - Accuracy';
         SupInvNumber_ac  : String(5) default ''      @Common.Label: 'Supplier Inv.Number - Accuracy';
         GrossAmount_ac   : String(5) default ''      @Common.Label: 'Gross Amount - Accuracy';
-
         Items            : Composition of many Items
                                on Items.Parent = $self;
 // // Below part is on development
@@ -52,12 +51,12 @@ entity Items : cuid {
     key Parent                      : Association to one InvoiceHeader @Common.Label: 'Parent_ID';
         PONumber                    : String(10) default ''            @Common.Label: 'Pur.Ord Number';
         MaterialNumber              : String(40) default ''            @Common.Label: 'Material Number';
-        Quantity                    : String(5) default ''             @Common.Label: 'Quantity';
+        Quantity                    : String(10) default ''            @Common.Label: 'Quantity';
         UoM                         : String(5) default ''             @Common.Label: 'Unit of Measure';
         UnitPrice                   : String(15) default ''            @Common.Label: 'Unit Price';
         NetAmount                   : String(15) default ''            @Common.Label: 'Total Amount';
         MatNum_ac                   : String(5) default ''             @Common.Label: 'Material Number - Accuracy';
-        Quantity_ac                 : String(5) default ''             @Common.Label: 'Quantity - Accuracy';
+        Quantity_ac                 : String(10) default ''            @Common.Label: 'Quantity - Accuracy';
         UoM_ac                      : String(5) default ''             @Common.Label: 'UoM - Accuracy';
         UnitPrice_ac                : String(5) default ''             @Common.Label: 'Unit Price - Accuracy';
         NetAmount_ac                : String(5) default ''             @Common.Label: 'Total Amount - Accuracy';
@@ -109,19 +108,19 @@ entity Status : CodeList {
 
 // -------------------------- Entity for Configuration App - Search Criteria -----------------------------------------
 entity Searchheader : cuid, managed {
-    Name         : String(255)                          @Common.Label: 'User Name';
-    Status       : Association to Statuscode_s          @Common.Label: 'Status';
-    machine_name : String(100)                          @Common.Label: 'Machine Name';
-    Items_s        : Composition of many Searchitem
+    Name         : String(255)                 @Common.Label: 'User Name';
+    Status       : Association to Statuscode_s @Common.Label: 'Status';
+    machine_name : String(100)                 @Common.Label: 'Machine Name';
+    Items_s      : Composition of many Searchitem
                        on Items_s.parent = $self;
 }
 
 entity Searchitem : cuid {
     key parent    : Association to Searchheader;
-        Sequence  : String(50)                          @Common.Label: 'Sequence';
-        elements1 : Association to one elementlist      @Common.Label: 'Element';
-        operand   : Association to Operands             @Common.Label: 'Operand';
-        Value     : String                              @Common.Label: 'Value';
+        Sequence  : String(50)                     @Common.Label: 'Sequence';
+        elements1 : Association to one elementlist @Common.Label: 'Element';
+        operand   : Association to Operands        @Common.Label: 'Operand';
+        Value     : String                         @Common.Label: 'Value';
 }
 
 entity elementlist : CodeList {
@@ -147,3 +146,90 @@ entity Operands : CodeList {
         };
 }
 // -------------------------- Entity for Configuration App - Search Criteria -----------------------------------------
+
+
+// -------------------------- Entity for Purchase Order App -----------------------------------------
+entity POHeader : cuid, managed {
+    key ID                     : UUID;
+        documentNumber         : String(10) default ''      @Common.Label: 'Pur.Ord Number';
+        mailDateTime           : DateTime                   @Common.Label: 'Mail Date & Time';
+        emailid                : String(50) default ''      @Common.Label: 'Supplier MailID';
+        mailSubject            : String(60) default ''      @Common.Label: 'EMail Subject';
+        dox_id                 : String(40) default ''      @Common.Label: 'DOX-ID';
+        extraction_status      : String(15) default 'Pending' @Common.Label : 'Extraction Status';      
+        netAmount              : String(15) default ''      @Common.Label: 'Net Amount';
+        grossAmount            : String(15) default ''      @Common.Label: 'Gross Amount';
+        currencyCode           : String(5) default ''       @Common.Label: 'Currency Code';
+        documentDate           : Date default ''            @Common.Label: 'Document Date';
+        deliveryDate           : Date default ''            @Common.Label: 'Delivery Date';
+        senderName             : String(60) default ''      @Common.Label: 'Ship To Address';
+        senderEmail            : String(60) default ''      @Common.Label: 'Sender Email';
+        StatusCode             : Association to one Status  @Common.Label: 'Status';
+        taxId                  : String(15) default ''      @Common.Label: 'Tax ID';
+        paymentTerms           : String(15) default ''      @Common.Label: 'Payment Terms';
+        senderBankAccount      : String(60) default ''      @Common.Label: 'Sender Bank Account';
+        senderAddress          : String(60) default ''      @Common.Label: 'Sender Address';
+        taxIdNumber            : String(60) default ''      @Common.Label: 'Tax ID number';
+        receiverId             : String(60) default ''      @Common.Label: 'Sender Name';
+        shipToAddress          : String(60) default ''      @Common.Label: 'Receive ID';
+        shippingTerms          : String(60) default ''      @Common.Label: 'Shipping Terms';
+        quantity               : String(10) default ''      @Common.Label: 'Quantity';
+        senderId               : String(60) default ''      @Common.Label: 'Sender ID';
+        senderStreet           : String(60) default ''      @Common.Label: 'Sender Street';
+        senderCity             : String(60) default ''      @Common.Label: 'Sender City';
+        senderHouseNumber      : String(60) default ''      @Common.Label: 'Sender House Number';
+        senderPostalCode       : String(10) default ''      @Common.Label: 'Sender Postal Code';
+        senderCountryCode      : String(5) default ''       @Common.Label: 'Sender Country Code';
+        senderPhone            : String(15) default ''      @Common.Label: 'Sender Phone';
+        senderFax              : String(60) default ''      @Common.Label: 'Sender Fax';
+        senderState            : String(60) default ''      @Common.Label: 'Sender State';
+        senderDistrict         : String(60) default ''      @Common.Label: 'Sender District';
+        senderExtraAddressPart : String(60) default ''      @Common.Label: 'Sender Extra Address Part';
+        shipToName             : String(60) default ''      @Common.Label: 'Ship To Name';
+        shipToStreet           : String(60) default ''      @Common.Label: 'Ship To Street';
+        shipToCity             : String(60) default ''      @Common.Label: 'Ship To City';
+        shipToHouseNumber      : String(60) default ''      @Common.Label: 'Ship To House Number';
+        shipToPostalCode       : String(10) default ''      @Common.Label: 'Ship To Postal Code';
+        shipToCountryCode      : String(5) default ''       @Common.Label: 'Ship To Country Code';
+        shipToPhone            : String(15) default ''      @Common.Label: 'Ship To Phone';
+        shipToFax              : String(15) default ''      @Common.Label: 'Ship To Fax';
+        shipToEmail            : String(60) default ''      @Common.Label: 'Ship To Email';
+        shipToState            : String(60) default ''      @Common.Label: 'Ship To State';
+        shipToDistrict         : String(60) default ''      @Common.Label: 'Ship To District';
+        shipToExtraAddressPart : String(60) default ''      @Common.Label: 'Ship To Extra Address Part';
+        documentNumber_ac      : String(8) default '0.00'   @Common.Label: 'Doc.Number - Accuracy';
+        netAmount_ac           : String(8) default '0.00'   @Common.Label: 'Net Amount - Accuracy';
+        grossAmount_ac         : String(8) default '0.00'   @Common.Label: 'Gross Amount - Accuracy';
+        currencyCode_ac        : String(8) default '0.00'   @Common.Label: 'Currency - Accuracy';
+        documentDate_ac        : String(8) default '0.00'   @Common.Label: 'Doc.Date - Accuracy';
+        senderName_ac          : String(8) default '0.00'   @Common.Label: 'Sender Name - Accuracy';
+        PoItems                : Composition of many PoItems
+                                     on PoItems.Parent = $self;
+}
+
+entity PoItems : cuid {
+    key ID                     : UUID;
+    key Parent                 : Association to one POHeader @Common.Label: 'Parent_ID';
+        description            : String(60) default ''       @Common.Label: 'Description';
+        netAmount              : String(15) default ''       @Common.Label: 'Net Amount';
+        quantity               : String(10) default ''       @Common.Label: 'Quantity';
+        unitPrice              : String(15) default ''       @Common.Label: 'Unit Price';
+        materialNumber         : String(40) default ''       @Common.Label: 'Material Number';
+        documentDate           : Date default ''             @Common.Label: 'Document Date';
+        itemNumber             : String(6) default ''        @Common.Label: 'Item Number';
+        currencyCode           : String(5) default ''        @Common.Label: 'Currency Code';
+        senderMaterialNumber   : String(40) default ''       @Common.Label: 'Sender Material Number';
+        supplierMaterialNumber : String(40) default ''       @Common.Label: 'Supplier Material Number';
+        customerMaterialNumber : String(40) default ''       @Common.Label: 'Custom Material Number';
+        unitOfMeasure          : String(5) default ''        @Common.Label: 'Unit of Measure';
+        description_ac              : String(8) default '0.00'  @Common.Label: 'Description - Accuracy';
+        netAmount_ac                : String(8) default '0.00'  @Common.Label: 'Net Amount - Accuracy';
+        quantity_ac                 : String(8) default '0.00'  @Common.Label: 'Quantity - Accuracy';
+        unitPrice_ac                : String(8) default '0.00'  @Common.Label: 'Unit Price - Accuracy';
+        materialNumber_ac           : String(8) default '0.00'  @Common.Label: 'Material Number - Accuracy';
+        senderMaterialNumber_ac     : String(8) default '0.00'  @Common.Label: 'Sender.Mat Numb - Accuracy';
+        supplierMaterialNumber_ac   : String(8) default '0.00'  @Common.Label: 'Suppl.Mat Numb - Accuracy';
+        unitOfMeasure_ac            : String(8) default '0.00'  @Common.Label: 'UoM - Accuracy';
+        customerMaterialNumber_ac   : String(8) default '0.00'  @Common.Label: 'Cust.Mat Number - Accuracy';
+}
+// -------------------------- Entity for Purchase Order App -----------------------------------------

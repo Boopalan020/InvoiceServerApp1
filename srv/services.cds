@@ -129,7 +129,7 @@ service InvoiceService {
         Items            : array of ItemsObject_invpost
     };
 
-    action   PostInvoice(data : invpost_payload) returns threeWayCheck_RespObject;
+    action   PostInvoice(data : invpost_payload)         returns threeWayCheck_RespObject;
 
     type DynamicAppLauncher {
         subtitle  : String;
@@ -145,7 +145,7 @@ service InvoiceService {
     // stateArrow   : String;
     };
 
-    function getTileInfo(tileType : String) returns DynamicAppLauncher;
+    function getTileInfo(tileType : String)              returns DynamicAppLauncher;
 
 }
 
@@ -309,14 +309,49 @@ service SearchAppService {
 
     entity Searchheader as projection on Tables.Searchheader;
     entity Searchitem   as projection on Tables.Searchitem;
-    
+
     type ty_search_item {
         element : String(50);
-        operand   : String(50);
-        value     : String(50);
+        operand : String(50);
+        value   : String(50);
     };
 
-    function getSearchConfig(username:String,machinename:String) returns array of ty_search_item;
+    function getSearchConfig(username : String, machinename : String) returns array of ty_search_item;
 
 }
 // -------------------------- Entity for Configuration App - Search Criteria -----------------------------------------
+
+
+///////// ----------------------- START Entity for Purchase Order App -----------------------------------//////////////
+@path: '/PO-App-srv'
+@impl: '/srv/Handlers/POAppHandler.js'
+service POServices {
+
+    entity POHeader as projection on Tables.POHeader;
+    entity POItem   as projection on Tables.PoItems;
+
+    // Structure
+    type po_payload {
+        mailDateTime : String(30);
+        emailid      : String(100);
+        mailSubject  : String(60);
+        content      : LargeBinary;
+        name         : String;
+        filename     : String;
+        mimeType     : String default 'application/pdf';
+    };
+
+    type po_payload_resp {
+        status  : String;
+        message : String;
+        id      : String;
+    };
+
+
+    //  Un-bound Action
+    action extract_and_save_po_data(data : po_payload) returns po_payload_resp;
+
+
+}
+
+///////// ----------------------- END Entity for Purchase Order App -----------------------------------//////////////

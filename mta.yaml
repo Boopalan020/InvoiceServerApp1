@@ -48,6 +48,10 @@ modules:
       - nsappsearchappui.zip
       name: nsappsearchappui
       target-path: resources/
+    - artifacts:
+      - nsapppopoui.zip
+      name: nsapppopoui
+      target-path: resources/
 - name: InvoiceServerApp1-destination-content
   type: com.sap.application.content
   requires:
@@ -93,6 +97,16 @@ modules:
 - name: nsappsearchappui
   type: html5
   path: app/searchappui
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: nsapppopoui
+  type: html5
+  path: app/poui
   build-parameters:
     build-result: dist
     builder: custom
