@@ -354,4 +354,199 @@ service POServices {
 
 }
 
+// extending the POHeader Entity
+extend Tables.POHeader with {
+    documentNumber_ac_text : String  = documentNumber_ac || ' %';
+    netAmount_ac_text      : String  = netAmount_ac || ' %';
+    grossAmount_ac_text    : String  = grossAmount_ac || ' %';
+    currencyCode_ac_text   : String  = currencyCode_ac || ' %';
+    documentDate_ac_text   : String  = documentDate_ac || ' %';
+    senderName_ac_text     : String  = senderName_ac || ' %';
+    documentNumber_acc     : Integer = case
+                                           when
+                                               (
+                                                   documentNumber_ac < '80'
+                                               )
+                                           then
+                                               1
+                                           else
+                                               3
+                                       end @Consumption.filter.hidden: true;
+    netAmount_acc          : Integer = case
+                                           when
+                                               (
+                                                   netAmount_ac < '80'
+                                               )
+                                           then
+                                               1
+                                           else
+                                               3
+                                       end @Consumption.filter.hidden: true;
+    grossAmount_acc        : Integer = case
+                                           when
+                                               (
+                                                   grossAmount_ac < '80'
+                                               )
+                                           then
+                                               1
+                                           else
+                                               3
+                                       end @Consumption.filter.hidden: true;
+    currencyCode_acc       : Integer = case
+                                           when
+                                               (
+                                                   currencyCode_ac < '80'
+                                               )
+                                           then
+                                               1
+                                           else
+                                               3
+                                       end @Consumption.filter.hidden: true;
+    documentDate_acc       : Integer = case
+                                           when
+                                               (
+                                                   documentDate_ac < '80'
+                                               )
+                                           then
+                                               1
+                                           else
+                                               3
+                                       end @Consumption.filter.hidden: true;
+    senderName_acc         : Integer = case
+                                           when
+                                               (
+                                                   senderName_ac < '80'
+                                               )
+                                           then
+                                               1
+                                           else
+                                               3
+                                       end @Consumption.filter.hidden: true;
+    overall_ac             : Integer;
+    overall_acc            : Integer = case
+                                           when
+                                               (
+                                                   overall_ac     < 80
+                                                   and overall_ac > 60
+                                               )
+                                           then
+                                               2
+                                           when
+                                               (
+                                                   overall_ac < 60
+                                               )
+                                           then
+                                               1
+                                           else
+                                               3
+                                       end @Consumption.filter.hidden: true;
+    overall_target         : Integer = 100 @Consumption.filter.hidden: true;
+}
+
+// extending the POItems entity
+
+extend Tables.PoItems with {
+    description_ac_text            : String  = description_ac || ' %';
+    netAmount_ac_text              : String  = netAmount_ac || ' %';
+    quantity_ac_text               : String  = quantity_ac || ' %';
+    unitPrice_ac_text              : String  = unitPrice_ac || ' %';
+    materialNumber_ac_text         : String  = materialNumber_ac || ' %';
+    senderMaterialNumber_ac_text   : String  = senderMaterialNumber_ac || ' %';
+    supplierMaterialNumber_ac_text : String  = supplierMaterialNumber_ac || ' %';
+    unitOfMeasure_ac_text          : String  = unitOfMeasure_ac || ' %';
+    customerMaterialNumber_ac_text : String  = customerMaterialNumber_ac || ' %';
+    description_acc                : Integer = case
+                                                   when
+                                                       (
+                                                           description_ac < '80'
+                                                       )
+                                                   then
+                                                       1
+                                                   else
+                                                       3
+                                               end;
+    netAmount_acc                  : Integer = case
+                                                   when
+                                                       (
+                                                           netAmount_ac < '80'
+                                                       )
+                                                   then
+                                                       1
+                                                   else
+                                                       3
+                                               end;
+    quantity_acc                   : Integer = case
+                                                   when
+                                                       (
+                                                           quantity_ac < '80'
+                                                       )
+                                                   then
+                                                       1
+                                                   else
+                                                       3
+                                               end;
+    unitPrice_acc                  : Integer = case
+                                                   when
+                                                       (
+                                                           unitPrice_ac < '80'
+                                                       )
+                                                   then
+                                                       1
+                                                   else
+                                                       3
+                                               end;
+    materialNumber_acc             : Integer = case
+                                                   when
+                                                       (
+                                                           materialNumber_ac < '80'
+                                                       )
+                                                   then
+                                                       1
+                                                   else
+                                                       3
+                                               end;
+    senderMaterialNumber_acc       : Integer = case
+                                                   when
+                                                       (
+                                                           senderMaterialNumber_ac < '80'
+                                                       )
+                                                   then
+                                                       1
+                                                   else
+                                                       3
+                                               end;
+    supplierMaterialNumber_acc     : Integer = case
+                                                   when
+                                                       (
+                                                           supplierMaterialNumber_ac < '80'
+                                                       )
+                                                   then
+                                                       1
+                                                   else
+                                                       3
+                                               end;
+    unitOfMeasure_acc              : Integer = case
+                                                   when
+                                                       (
+                                                           unitOfMeasure_ac < '80'
+                                                       )
+                                                   then
+                                                       1
+                                                   else
+                                                       3
+                                               end;
+    customerMaterialNumber_acc     : Integer = case
+                                                   when
+                                                       (
+                                                           customerMaterialNumber_ac < '80'
+                                                       )
+                                                   then
+                                                       1
+                                                   else
+                                                       3
+                                               end;
+    QuantityUnit                   : String  = quantity || ' ' || unitOfMeasure        @Common.Label: 'Quantity';
+    UnitPriceCur                   : String  = unitPrice || ' ' || Parent.currencyCode @Common.Label: 'Unit Price';
+    NetamountCur                   : String  = netAmount || ' ' || Parent.currencyCode @Common.Label: 'Net Amount';
+}
 ///////// ----------------------- END Entity for Purchase Order App -----------------------------------//////////////

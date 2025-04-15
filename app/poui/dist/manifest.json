@@ -1,0 +1,201 @@
+{
+    "_version": "1.65.0",
+    "sap.app": {
+        "id": "ns.app.po.poui",
+        "type": "application",
+        "i18n": "i18n/i18n.properties",
+        "applicationVersion": {
+            "version": "0.0.1"
+        },
+        "title": "{{appTitle}}",
+        "description": "{{appDescription}}",
+        "resources": "resources.json",
+        "sourceTemplate": {
+            "id": "@sap/generator-fiori:fpm",
+            "version": "1.17.1",
+            "toolsId": "c46f8ca7-b849-4dcc-a198-a621cf04afde"
+        },
+        "dataSources": {
+            "mainService": {
+                "uri": "PO-App-srv/",
+                "type": "OData",
+                "settings": {
+                    "annotations": [],
+                    "odataVersion": "4.0"
+                }
+            }
+        },
+        "crossNavigation": {
+            "inbounds": {
+                "po_sem_obj-managed": {
+                    "semanticObject": "po_sem_obj",
+                    "action": "managed",
+                    "title": "{{po_sem_obj-managed.flpTitle}}",
+                    "signature": {
+                        "parameters": {},
+                        "additionalParameters": "allowed"
+                    }
+                }
+            }
+        }
+    },
+    "sap.ui": {
+        "technology": "UI5",
+        "icons": {
+            "icon": "",
+            "favIcon": "",
+            "phone": "",
+            "phone@2": "",
+            "tablet": "",
+            "tablet@2": ""
+        },
+        "deviceTypes": {
+            "desktop": true,
+            "tablet": true,
+            "phone": true
+        }
+    },
+    "sap.ui5": {
+        "flexEnabled": true,
+        "dependencies": {
+            "minUI5Version": "1.134.1",
+            "libs": {
+                "sap.m": {},
+                "sap.ui.core": {},
+                "sap.fe.core": {},
+                "sap.f": {},
+                "sap.fe.macros": {},
+                "sap.fe.templates": {}
+            }
+        },
+        "contentDensities": {
+            "compact": true,
+            "cozy": true
+        },
+        "models": {
+            "i18n": {
+                "type": "sap.ui.model.resource.ResourceModel",
+                "settings": {
+                    "bundleName": "ns.app.po.poui.i18n.i18n"
+                }
+            },
+            "": {
+                "dataSource": "mainService",
+                "preload": true,
+                "settings": {
+                    "operationMode": "Server",
+                    "autoExpandSelect": true,
+                    "earlyRequests": true
+                }
+            },
+            "@i18n": {
+                "type": "sap.ui.model.resource.ResourceModel",
+                "uri": "i18n/i18n.properties"
+            }
+        },
+        "resources": {
+            "css": []
+        },
+        "routing": {
+            "config": {
+                "flexibleColumnLayout": {
+                    "defaultTwoColumnLayoutType": "TwoColumnsMidExpanded",
+                    "defaultThreeColumnLayoutType": "ThreeColumnsMidExpanded"
+                },
+                "routerClass": "sap.f.routing.Router"
+            },
+            "routes": [
+                {
+                    "name": "POHeaderMain",
+                    "pattern": ":?query:",
+                    "target": [
+                        "POHeaderMain"
+                    ]
+                },
+                {
+                    "name": "POHeaderObjectPage",
+                    "pattern": "POHeader({POHeaderKey}):?query:",
+                    "target": [
+                        "POHeaderMain",
+                        "POHeaderObjectPage"
+                    ]
+                },
+                {
+                    "name": "POHeader_PoItemsObjectPage",
+                    "pattern": "POHeader({POHeaderKey})/PoItems({PoItemsKey}):?query:",
+                    "target": [
+                        "POHeaderMain",
+                        "POHeaderObjectPage",
+                        "POHeader_PoItemsObjectPage"
+                    ]
+                }
+            ],
+            "targets": {
+                "POHeaderMain": {
+                    "type": "Component",
+                    "id": "POHeaderMain",
+                    "name": "sap.fe.core.fpm",
+                    "options": {
+                        "settings": {
+                            "viewName": "ns.app.po.poui.ext.main.Main",
+                            "contextPath": "/POHeader",
+                            "navigation": {
+                                "POHeader": {
+                                    "detail": {
+                                        "route": "POHeaderObjectPage"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "controlAggregation": "beginColumnPages",
+                    "contextPattern": ""
+                },
+                "POHeaderObjectPage": {
+                    "type": "Component",
+                    "id": "POHeaderObjectPage",
+                    "name": "sap.fe.templates.ObjectPage",
+                    "controlAggregation": "midColumnPages",
+                    "options": {
+                        "settings": {
+                            "navigation": {
+                                "PoItems": {
+                                    "detail": {
+                                        "route": "POHeader_PoItemsObjectPage"
+                                    }
+                                }
+                            },
+                            "contextPath": "/POHeader",
+                            "editableHeaderContent": false
+                        }
+                    },
+                    "contextPattern": "/POHeader({POHeaderKey})"
+                },
+                "POHeader_PoItemsObjectPage": {
+                    "type": "Component",
+                    "id": "POHeader_PoItemsObjectPage",
+                    "name": "sap.fe.templates.ObjectPage",
+                    "controlAggregation": "endColumnPages",
+                    "options": {
+                        "settings": {
+                            "navigation": {},
+                            "contextPath": "/POHeader/PoItems",
+                            "editableHeaderContent": false
+                        }
+                    },
+                    "contextPattern": "/POHeader({POHeaderKey})/PoItems({PoItemsKey})"
+                }
+            }
+        },
+        "rootView": {
+            "viewName": "sap.fe.templates.RootContainer.view.Fcl",
+            "type": "XML",
+            "async": true,
+            "id": "appRootView"
+        }
+    },
+    "sap.cloud": {
+        "public": true,
+        "service": "invoices"
+    }
+}

@@ -64,7 +64,8 @@
         "sap.ui.core": {},
         "sap.fe.core": {},
         "sap.f": {},
-        "sap.fe.macros": {}
+        "sap.fe.macros": {},
+        "sap.fe.templates": {}
       }
     },
     "contentDensities": {
@@ -98,7 +99,7 @@
     "routing": {
       "config": {
         "flexibleColumnLayout": {
-          "defaultTwoColumnLayoutType": "TwoColumnsBeginExpanded",
+          "defaultTwoColumnLayoutType": "TwoColumnsMidExpanded",
           "defaultThreeColumnLayoutType": "ThreeColumnsMidExpanded"
         },
         "routerClass": "sap.f.routing.Router"
@@ -110,6 +111,23 @@
           "target": [
             "POHeaderMain"
           ]
+        },
+        {
+          "name": "POHeaderObjectPage",
+          "pattern": "POHeader({POHeaderKey}):?query:",
+          "target": [
+            "POHeaderMain",
+            "POHeaderObjectPage"
+          ]
+        },
+        {
+          "name": "POHeader_PoItemsObjectPage",
+          "pattern": "POHeader({POHeaderKey})/PoItems({PoItemsKey}):?query:",
+          "target": [
+            "POHeaderMain",
+            "POHeaderObjectPage",
+            "POHeader_PoItemsObjectPage"
+          ]
         }
       ],
       "targets": {
@@ -120,11 +138,52 @@
           "options": {
             "settings": {
               "viewName": "ns.app.po.poui.ext.main.Main",
-              "contextPath": "/POHeader"
+              "contextPath": "/POHeader",
+              "navigation": {
+                "POHeader": {
+                  "detail": {
+                    "route": "POHeaderObjectPage"
+                  }
+                }
+              }
             }
           },
           "controlAggregation": "beginColumnPages",
           "contextPattern": ""
+        },
+        "POHeaderObjectPage": {
+          "type": "Component",
+          "id": "POHeaderObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "controlAggregation": "midColumnPages",
+          "options": {
+            "settings": {
+              "navigation": {
+                "PoItems": {
+                  "detail": {
+                    "route": "POHeader_PoItemsObjectPage"
+                  }
+                }
+              },
+              "contextPath": "/POHeader",
+              "editableHeaderContent": false
+            }
+          },
+          "contextPattern": "/POHeader({POHeaderKey})"
+        },
+        "POHeader_PoItemsObjectPage": {
+          "type": "Component",
+          "id": "POHeader_PoItemsObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "controlAggregation": "endColumnPages",
+          "options": {
+            "settings": {
+              "navigation": {},
+              "contextPath": "/POHeader/PoItems",
+              "editableHeaderContent": false
+            }
+          },
+          "contextPattern": "/POHeader({POHeaderKey})/PoItems({PoItemsKey})"
         }
       }
     },

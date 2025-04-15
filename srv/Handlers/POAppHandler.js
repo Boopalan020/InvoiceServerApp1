@@ -202,6 +202,45 @@ module.exports = class POAppService extends cds.ApplicationService {
             };
         });
 
+        this.after("READ", "POHeader", async (data) => { 
+
+            let oDB, aHeaders, oHeader, Items, aItem, iOverall_ac = 0, iOverall_item_ac = 0, iAvg_Counter = 0,
+            {POHeader , PoItems} = cds.entities('tablemodel.srv.POServices');
+            try {
+                    // DB - Service
+                    oDB = await cds.connect.to('db');
+                    // console.log(oDB);
+    
+                    // Get the Header details
+                    aHeaders = await oDB.run(SELECT.from(POHeader));
+    
+                    // Get the item details
+                    Items = await SELECT.from('db.Tables.PoItems');
+
+                    // Loop the fetched header details and calculate the overall accuracy percentage
+                for (const d of data) { 
+                    oHeader = aHeaders.find((head) => head.ID == d.ID);
+                    aItem = Items.filter((it) => it.Parent_ID == d.ID);
+
+                    iOverall_ac = parseFloat(oHeader.documentNumber_ac) + parseFloat(oHeader.netAmount_ac) + parseFloat(oHeader.grossAmount_ac) + parseFloat(oHeader.currencyCode_ac) + parseFloat(oHeader.documentDate_ac) + parseFloat(oHeader.senderName_ac);
+                    iAvg_Counter = 6;
+                    iOverall_item_ac = 0;
+
+                    for (const item of aItem) {
+                        iOverall_item_ac += (parseFloat(item.customerMaterialNumber_ac) + parseFloat(item.quantity_ac) + parseFloat(item.unitOfMeasure_ac) + parseFloat(item.netAmount_ac) + parseFloat(item.unitPrice_ac) + parseFloat(item.description_ac));
+                        iAvg_Counter += 6;
+                    }
+
+                    iOverall_ac = (iOverall_ac + iOverall_item_ac) / iAvg_Counter;
+
+                    d.overall_ac = parseInt(iOverall_ac.toFixed(2));
+
+                }
+            }catch (err) {
+                console.log("Error in this.after(\"READ\", \"POHeader\", async (data))", err);
+            }
+         })
+
         /**
      * Function to convert the base64 large string value to blob object
      * @param {*} base64String - Base64 large string value
