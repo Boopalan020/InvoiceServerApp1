@@ -32,11 +32,6 @@ annotate service.InvoiceHeader with @(
     UI.LineItem : [
         {
             $Type : 'UI.DataField',
-            Value : ID,
-            ![@UI.Hidden],
-        },
-        {
-            $Type : 'UI.DataField',
             Value : PONumber,
             Label : '{i18n>PurordNumber}',
             ![@UI.Importance] : #High,
@@ -45,29 +40,7 @@ annotate service.InvoiceHeader with @(
             $Type : 'UI.DataField',
             Value : SupNoName,
             Label : '{i18n>Supplier}',
-        },
-        {
-            $Type : 'UI.DataField',
-            Value : SupplierMail,
-            Label : '{i18n>SupplierMailid}',
             ![@UI.Importance] : #High,
-        },
-        {
-            $Type : 'UI.DataField',
-            Value : MailSubject,
-            Label : '{i18n>EmailSubject}',
-            ![@UI.Importance] : #Low,
-        },
-        {
-            $Type : 'UI.DataField',
-            Value : SupInvNumber,
-            Label : '{i18n>SupplierInvnumber}',
-            ![@UI.Importance] : #Medium,
-        },
-        {
-            $Type : 'UI.DataField',
-            Value : GrossAmount,
-            Label : '{i18n>GrossAmount}',
         },
         {
             $Type : 'UI.DataFieldForAction',
@@ -76,11 +49,32 @@ annotate service.InvoiceHeader with @(
         },
         {
             $Type : 'UI.DataField',
+            Value : createdAt,
+            ![@UI.Importance] : #High,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : modifiedBy,
+            ![@UI.Importance] : #High,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : modifiedAt,
+            ![@UI.Importance] : #High,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : GrossAmount,
+            Label : '{i18n>GrossAmount}',
+            ![@UI.Importance] : #High,
+        },
+        {
+            $Type : 'UI.DataField',
             Value : StatusCode_code,
             Criticality : StatusCode.status_critics,
             CriticalityRepresentation : #WithIcon,
             Label : 'Status',
-            ![@UI.Importance] : #Medium
+            ![@UI.Importance] : #High
         },
          
     ],
@@ -105,11 +99,11 @@ annotate service.InvoiceHeader with @(
         TypeNamePlural : '{i18n>Invoices}',
         Title : {
             $Type : 'UI.DataField',
-            Value : SupplierMail,
+            Value : SupplierName,
         },
         Description : {
             $Type : 'UI.DataField',
-            Value : 'EMail-ID',
+            Value : 'Supplier Name',
         },
         TypeImageUrl : 'sap-icon://supplier',
     },
@@ -277,7 +271,7 @@ annotate service.InvoiceHeader with @(
             },
             {
                 $Type : 'UI.DataField',
-                Value : SupplierName,
+                Value : SupplierMail,
             },
         ],
     },
@@ -763,4 +757,11 @@ annotate service.Status with @(
         ],
     }
 );
+
+annotate service.InvoiceHeader with {
+    GrossAmount @Common.Text : {
+        $value : Currency,
+        ![@UI.TextArrangement] : #TextLast
+    }
+};
 

@@ -31,6 +31,7 @@
                     "semanticObject": "po_sem_obj",
                     "action": "managed",
                     "title": "{{po_sem_obj-managed.flpTitle}}",
+                    "subTitle": "Manage Process",
                     "signature": {
                         "parameters": {},
                         "additionalParameters": "allowed"

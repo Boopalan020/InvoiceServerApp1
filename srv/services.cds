@@ -35,11 +35,11 @@ service InvoiceService {
         UoM            : String(5);
         UnitPrice      : String(15);
         NetAmount      : String(15);
-        MatNum_ac      : String(5);
-        Quantity_ac    : String(5);
-        UoM_ac         : String(5);
-        UnitPrice_ac   : String(5);
-        NetAmount_ac   : String(5);
+        MatNum_ac      : String(20);
+        Quantity_ac    : String(20);
+        UoM_ac         : String(20);
+        UnitPrice_ac   : String(20);
+        NetAmount_ac   : String(20);
         Message        : String;
     };
 
@@ -68,17 +68,17 @@ service InvoiceService {
         Message          : String;
         Reason           : String;
         ProcessFlowID    : String(40);
-        SupplierName_ac  : String(5);
+        SupplierName_ac  : String(20);
         PONumber_ac      : String;
-        PODate_ac        : String(5);
-        Curr_ac          : String(5);
-        SupInvNumber_ac  : String(5);
-        GrossAmount_ac   : String(5);
+        PODate_ac        : String(20);
+        Curr_ac          : String(20);
+        SupInvNumber_ac  : String(20);
+        GrossAmount_ac   : String(20);
         Items            : array of ItemsObject_threewaycheck;
         attachments      : array of AttachmentObject;
     };
 
-    action   threeWayCheck(data : threeWayCheck_payload) returns threeWayCheck_RespObject;
+    action   threeWayCheck(data : threeWayCheck_payload)              returns threeWayCheck_RespObject;
 
     // -------------------- Invoice Posting - Action Import
     type ItemsObject_invpost {
@@ -88,11 +88,11 @@ service InvoiceService {
         UoM                         : String(5);
         UnitPrice                   : String(15);
         NetAmount                   : String(15);
-        MatNum_ac                   : String(5);
-        Quantity_ac                 : String(5);
-        UoM_ac                      : String(5);
-        UnitPrice_ac                : String(5);
-        NetAmount_ac                : String(5);
+        MatNum_ac                   : String(20);
+        Quantity_ac                 : String(20);
+        UoM_ac                      : String(20);
+        UnitPrice_ac                : String(20);
+        NetAmount_ac                : String(20);
         Message                     : String;
         SuplInvItem                 : String(5);
         POItem                      : String(5);
@@ -120,16 +120,16 @@ service InvoiceService {
         Message          : String;
         Reason           : String;
         ProcessFlowID    : String(40);
-        SupplierName_ac  : String(5);
+        SupplierName_ac  : String(20);
         PONumber_ac      : String;
-        PODate_ac        : String(5);
-        Curr_ac          : String(5);
-        SupInvNumber_ac  : String(5);
-        GrossAmount_ac   : String(5);
+        PODate_ac        : String(20);
+        Curr_ac          : String(20);
+        SupInvNumber_ac  : String(20);
+        GrossAmount_ac   : String(20);
         Items            : array of ItemsObject_invpost
     };
 
-    action   PostInvoice(data : invpost_payload)         returns threeWayCheck_RespObject;
+    action   PostInvoice(data : invpost_payload)                      returns threeWayCheck_RespObject;
 
     type DynamicAppLauncher {
         subtitle  : String;
@@ -145,156 +145,156 @@ service InvoiceService {
     // stateArrow   : String;
     };
 
-    function getTileInfo(tileType : String)              returns DynamicAppLauncher;
+    function getTileInfo(tileType : String)                           returns DynamicAppLauncher;
 
 }
 
 // Extending the Entities - Delta
 extend Tables.InvoiceHeader with {
     PONumber_ac_text     : String  = PONumber_ac || ' %'                   @Consumption.filter.hidden: true;
-    PONumber_acc         : Integer = case
-                                         when
-                                             (
-                                                 PONumber_ac < '80'
-                                             )
-                                         then
-                                             1
-                                         else
-                                             3
-                                     end                                   @Consumption.filter.hidden: true;
+    PONumber_acc         : Integer =           case
+                                                   when
+                                                       (
+                                                           PONumber_ac < '80'
+                                                       )
+                                                   then
+                                                       1
+                                                   else
+                                                       3
+                                               end                         @Consumption.filter.hidden: true;
     SupplierName_ac_text : String  = SupplierName_ac || ' %';
-    SupplierName_acc     : Integer = case
-                                         when
-                                             (
-                                                 SupplierName_ac < '80'
-                                             )
-                                         then
-                                             1
-                                         else
-                                             3
-                                     end                                   @Consumption.filter.hidden: true;
+    SupplierName_acc     : Integer =           case
+                                                   when
+                                                       (
+                                                           SupplierName_ac < '80'
+                                                       )
+                                                   then
+                                                       1
+                                                   else
+                                                       3
+                                               end                         @Consumption.filter.hidden: true;
     SupInvNumber_ac_text : String  = SupInvNumber_ac || ' %';
-    SupInvNumber_acc     : Integer = case
-                                         when
-                                             (
-                                                 SupInvNumber_ac < '80'
-                                             )
-                                         then
-                                             1
-                                         else
-                                             3
-                                     end                                   @Consumption.filter.hidden: true;
+    SupInvNumber_acc     : Integer =           case
+                                                   when
+                                                       (
+                                                           SupInvNumber_ac < '80'
+                                                       )
+                                                   then
+                                                       1
+                                                   else
+                                                       3
+                                               end                         @Consumption.filter.hidden: true;
     Curr_ac_text         : String  = Curr_ac || ' %';
-    Curr_acc             : Integer = case
-                                         when
-                                             (
-                                                 Curr_ac < '80'
-                                             )
-                                         then
-                                             1
-                                         else
-                                             3
-                                     end                                   @Consumption.filter.hidden: true;
+    Curr_acc             : Integer =           case
+                                                   when
+                                                       (
+                                                           Curr_ac < '80'
+                                                       )
+                                                   then
+                                                       1
+                                                   else
+                                                       3
+                                               end                         @Consumption.filter.hidden: true;
     GrossAmount_ac_text  : String  = GrossAmount_ac || ' %';
-    GrossAmount_acc      : Integer = case
-                                         when
-                                             (
-                                                 GrossAmount_ac < '80'
-                                             )
-                                         then
-                                             1
-                                         else
-                                             3
-                                     end                                   @Consumption.filter.hidden: true;
+    GrossAmount_acc      : Integer =           case
+                                                   when
+                                                       (
+                                                           GrossAmount_ac < '80'
+                                                       )
+                                                   then
+                                                       1
+                                                   else
+                                                       3
+                                               end                         @Consumption.filter.hidden: true;
     SupNoName            : String  = SupplierNumber || '-' || SupplierName @Common.Label             : 'Supplier';
     overall_ac           : Integer;
-    overall_acc          : Integer = case
-                                         when
-                                             (
-                                                 overall_ac     < 80
-                                                 and overall_ac > 60
-                                             )
-                                         then
-                                             2
-                                         when
-                                             (
-                                                 overall_ac < 60
-                                             )
-                                         then
-                                             1
-                                         else
-                                             3
-                                     end                                   @Consumption.filter.hidden: true;
+    overall_acc          : Integer =           case
+                                                   when
+                                                       (
+                                                           overall_ac     < 80
+                                                           and overall_ac > 60
+                                                       )
+                                                   then
+                                                       2
+                                                   when
+                                                       (
+                                                           overall_ac < 60
+                                                       )
+                                                   then
+                                                       1
+                                                   else
+                                                       3
+                                               end                         @Consumption.filter.hidden: true;
     overall_target       : Integer = 100                                   @Consumption.filter.hidden: true;
 
 };
 
 extend Tables.Items with {
-    Criticality_code_item : Integer = case
-                                          when
-                                              Message <> ''
-                                          then
-                                              1
-                                          when
-                                              Message = ''
-                                          then
-                                              0
-                                      end;
+    Criticality_code_item : Integer =          case
+                                                   when
+                                                       Message <> ''
+                                                   then
+                                                       1
+                                                   when
+                                                       Message =  ''
+                                                   then
+                                                       0
+                                               end;
     MatNum_ac_text        : String  = MatNum_ac || ' %';
-    MatNum_acc            : Integer = case
-                                          when
-                                              (
-                                                  MatNum_ac < '80'
-                                              )
-                                          then
-                                              1
-                                          else
-                                              3
-                                      end;
+    MatNum_acc            : Integer =          case
+                                                   when
+                                                       (
+                                                           MatNum_ac < '80'
+                                                       )
+                                                   then
+                                                       1
+                                                   else
+                                                       3
+                                               end;
     Quantity_ac_text      : String  = Quantity_ac || ' %';
-    Quantity_acc          : Integer = case
-                                          when
-                                              (
-                                                  Quantity_ac < '80'
-                                              )
-                                          then
-                                              1
-                                          else
-                                              3
-                                      end;
+    Quantity_acc          : Integer =          case
+                                                   when
+                                                       (
+                                                           Quantity_ac < '80'
+                                                       )
+                                                   then
+                                                       1
+                                                   else
+                                                       3
+                                               end;
     UnitPrice_ac_text     : String  = UnitPrice_ac || ' %';
-    UnitPrice_acc         : Integer = case
-                                          when
-                                              (
-                                                  UnitPrice_ac < '80'
-                                              )
-                                          then
-                                              1
-                                          else
-                                              3
-                                      end;
+    UnitPrice_acc         : Integer =          case
+                                                   when
+                                                       (
+                                                           UnitPrice_ac < '80'
+                                                       )
+                                                   then
+                                                       1
+                                                   else
+                                                       3
+                                               end;
     UoM_ac_text           : String  = UoM_ac || ' %';
-    UoM_acc               : Integer = case
-                                          when
-                                              (
-                                                  UoM_ac < '80'
-                                              )
-                                          then
-                                              1
-                                          else
-                                              3
-                                      end;
+    UoM_acc               : Integer =          case
+                                                   when
+                                                       (
+                                                           UoM_ac < '80'
+                                                       )
+                                                   then
+                                                       1
+                                                   else
+                                                       3
+                                               end;
     NetAmount_ac_text     : String  = NetAmount_ac || ' %';
-    NetAmount_acc         : Integer = case
-                                          when
-                                              (
-                                                  NetAmount_ac < '80'
-                                              )
-                                          then
-                                              1
-                                          else
-                                              3
-                                      end;
+    NetAmount_acc         : Integer =          case
+                                                   when
+                                                       (
+                                                           NetAmount_ac < '80'
+                                                       )
+                                                   then
+                                                       1
+                                                   else
+                                                       3
+                                               end;
     Material              : String  = MaterialNumber || ''                @Common.Label: 'Material';
     QuantityUnit          : String  = Quantity || ' ' || UoM              @Common.Label: 'Quantity';
     UnitPriceCur          : String  = UnitPrice || ' ' || Parent.Currency @Common.Label: 'Unit Price';
@@ -327,7 +327,11 @@ service SearchAppService {
 @impl: '/srv/Handlers/POAppHandler.js'
 service POServices {
 
-    entity POHeader as projection on Tables.POHeader;
+    entity POHeader as projection on Tables.POHeader
+        actions {
+            action refresh_extractions();
+        };
+
     entity POItem   as projection on Tables.PoItems;
 
     // Structure
@@ -349,7 +353,7 @@ service POServices {
 
 
     //  Un-bound Action
-    action extract_and_save_po_data(data : po_payload) returns po_payload_resp;
+    action extract_and_save_po_data(data : po_payload)                returns po_payload_resp;
 
 
 }
@@ -362,85 +366,85 @@ extend Tables.POHeader with {
     currencyCode_ac_text   : String  = currencyCode_ac || ' %';
     documentDate_ac_text   : String  = documentDate_ac || ' %';
     senderName_ac_text     : String  = senderName_ac || ' %';
-    documentNumber_acc     : Integer = case
-                                           when
-                                               (
-                                                   documentNumber_ac < '80'
-                                               )
-                                           then
-                                               1
-                                           else
-                                               3
-                                       end @Consumption.filter.hidden: true;
-    netAmount_acc          : Integer = case
-                                           when
-                                               (
-                                                   netAmount_ac < '80'
-                                               )
-                                           then
-                                               1
-                                           else
-                                               3
-                                       end @Consumption.filter.hidden: true;
-    grossAmount_acc        : Integer = case
-                                           when
-                                               (
-                                                   grossAmount_ac < '80'
-                                               )
-                                           then
-                                               1
-                                           else
-                                               3
-                                       end @Consumption.filter.hidden: true;
-    currencyCode_acc       : Integer = case
-                                           when
-                                               (
-                                                   currencyCode_ac < '80'
-                                               )
-                                           then
-                                               1
-                                           else
-                                               3
-                                       end @Consumption.filter.hidden: true;
-    documentDate_acc       : Integer = case
-                                           when
-                                               (
-                                                   documentDate_ac < '80'
-                                               )
-                                           then
-                                               1
-                                           else
-                                               3
-                                       end @Consumption.filter.hidden: true;
-    senderName_acc         : Integer = case
-                                           when
-                                               (
-                                                   senderName_ac < '80'
-                                               )
-                                           then
-                                               1
-                                           else
-                                               3
-                                       end @Consumption.filter.hidden: true;
+    documentNumber_acc     : Integer =         case
+                                                   when
+                                                       (
+                                                           documentNumber_ac < '80'
+                                                       )
+                                                   then
+                                                       1
+                                                   else
+                                                       3
+                                               end @Consumption.filter.hidden: true;
+    netAmount_acc          : Integer =         case
+                                                   when
+                                                       (
+                                                           netAmount_ac < '80'
+                                                       )
+                                                   then
+                                                       1
+                                                   else
+                                                       3
+                                               end @Consumption.filter.hidden: true;
+    grossAmount_acc        : Integer =         case
+                                                   when
+                                                       (
+                                                           grossAmount_ac < '80'
+                                                       )
+                                                   then
+                                                       1
+                                                   else
+                                                       3
+                                               end @Consumption.filter.hidden: true;
+    currencyCode_acc       : Integer =         case
+                                                   when
+                                                       (
+                                                           currencyCode_ac < '80'
+                                                       )
+                                                   then
+                                                       1
+                                                   else
+                                                       3
+                                               end @Consumption.filter.hidden: true;
+    documentDate_acc       : Integer =         case
+                                                   when
+                                                       (
+                                                           documentDate_ac < '80'
+                                                       )
+                                                   then
+                                                       1
+                                                   else
+                                                       3
+                                               end @Consumption.filter.hidden: true;
+    senderName_acc         : Integer =         case
+                                                   when
+                                                       (
+                                                           senderName_ac < '80'
+                                                       )
+                                                   then
+                                                       1
+                                                   else
+                                                       3
+                                               end @Consumption.filter.hidden: true;
     overall_ac             : Integer;
-    overall_acc            : Integer = case
-                                           when
-                                               (
-                                                   overall_ac     < 80
-                                                   and overall_ac > 60
-                                               )
-                                           then
-                                               2
-                                           when
-                                               (
-                                                   overall_ac < 60
-                                               )
-                                           then
-                                               1
-                                           else
-                                               3
-                                       end @Consumption.filter.hidden: true;
-    overall_target         : Integer = 100 @Consumption.filter.hidden: true;
+    overall_acc            : Integer =         case
+                                                   when
+                                                       (
+                                                           overall_ac     < 80
+                                                           and overall_ac > 60
+                                                       )
+                                                   then
+                                                       2
+                                                   when
+                                                       (
+                                                           overall_ac < 60
+                                                       )
+                                                   then
+                                                       1
+                                                   else
+                                                       3
+                                               end @Consumption.filter.hidden: true;
+    overall_target         : Integer = 100         @Consumption.filter.hidden: true;
 }
 
 // extending the POItems entity

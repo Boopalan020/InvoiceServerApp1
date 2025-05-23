@@ -38,6 +38,11 @@ annotate service.POHeader with @(
             $Type : 'UI.DataField',
             Value : extraction_status,
         },
+        {
+            $Type : 'UI.DataFieldForAction',
+            Action : 'tablemodel.srv.POServices.refresh_extractions',
+            Label : '{i18n>Refresh}',
+        },
     ],
     UI.Facets : [
         {
@@ -107,7 +112,11 @@ annotate service.POHeader with @(
         TypeImageUrl : 'sap-icon://sales-document',
     },
     UI.Identification : [
-        
+        {
+            $Type : 'UI.DataFieldForAction',
+            Action : 'tablemodel.srv.POServices.refresh_extractions',
+            Label : '{i18n>Refresh}',
+        },
     ],
     UI.FieldGroup #DocumentExtractionInfo : {
         $Type : 'UI.FieldGroupType',
@@ -298,7 +307,7 @@ annotate service.POItem with @(
             $Type : 'UI.DataField',
             Value : description,
             Criticality : description_acc,
-            CriticalityRepresentation : #WithIcon,
+            CriticalityRepresentation : #WithoutIcon,
             ![@UI.Importance] : #Low,
         },
         {
@@ -481,6 +490,21 @@ annotate service.POItem with @(
                 Value : unitOfMeasure_ac_text,
                 Criticality : unitOfMeasure_acc,
                 CriticalityRepresentation : #WithoutIcon,
+            },
+        },
+    },
+    UI.ConnectedFields #connected6 : {
+        $Type : 'UI.ConnectedFieldsType',
+        Template : '{materialNumber}-{materialNumber_ac}',
+        Data : {
+            $Type : 'Core.Dictionary',
+            materialNumber : {
+                $Type : 'UI.DataField',
+                Value : materialNumber,
+            },
+            materialNumber_ac : {
+                $Type : 'UI.DataField',
+                Value : materialNumber_ac,
             },
         },
     },

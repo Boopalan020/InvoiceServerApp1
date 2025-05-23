@@ -41,7 +41,7 @@ module.exports = class InvoiceService extends cds.ApplicationService {
             }
             
             return {
-                subtitle: "Dashbaord",
+                subtitle: "Manage process",
                 title: "Invoice Processing",
                 icon: "sap-icon://collections-insight",
                 info: "Task(s) Completed",
