@@ -1,8 +1,8 @@
 namespace db.tables;
 
 using {
-                           cuid,
-                           managed,
+    cuid,
+    managed,
     sap.common.CodeList as CodeList
 } from '@sap/cds/common';
 using {Attachments} from '@cap-js/sdm';
@@ -10,6 +10,7 @@ using {poextsrv.A_PurchaseOrder as A_PurchaseOrder} from '../srv/external/poexts
 using {suppl_api.ZC_Supplier_1 as suppl_api} from '../srv/external/suppl_api';
 
 // -------------------------- Entity for Monitoring App -----------------------------------------
+@cds.persistence.audit
 entity InvoiceHeader : cuid, managed {
     key ID               : UUID;
         PONumber         : String(10) default ''     @Common.Label: 'Pur.Ord Number';
@@ -28,14 +29,16 @@ entity InvoiceHeader : cuid, managed {
         Message          : String(100) default ''    @Common.Label: 'Message';
         Reason           : String default ''         @Common.Label: 'Error-Reason';
         ProcessFlowID    : String(40) default ''     @Common.Label: 'Workflow ID';
-        SupplierName_ac  : String(20) default ''         @Common.Label: 'Supplier Name - Accuracy';
-        PONumber_ac      : String(20) default ''         @Common.Label: 'Pur.Ord Number - Accuracy';
-        PODate_ac        : String(20) default ''         @Common.Label: 'Pur.Ord Date - Accuracy';
-        Curr_ac          : String(20) default ''         @Common.Label: 'Currency - Accuracy';
-        SupInvNumber_ac  : String(20) default ''         @Common.Label: 'Supplier Inv.Number - Accuracy';
-        GrossAmount_ac   : String(20) default ''         @Common.Label: 'Gross Amount - Accuracy';
+        SupplierName_ac  : String(20) default ''     @Common.Label: 'Supplier Name - Accuracy';
+        PONumber_ac      : String(20) default ''     @Common.Label: 'Pur.Ord Number - Accuracy';
+        PODate_ac        : String(20) default ''     @Common.Label: 'Pur.Ord Date - Accuracy';
+        Curr_ac          : String(20) default ''     @Common.Label: 'Currency - Accuracy';
+        SupInvNumber_ac  : String(20) default ''     @Common.Label: 'Supplier Inv.Number - Accuracy';
+        GrossAmount_ac   : String(20) default ''     @Common.Label: 'Gross Amount - Accuracy';
         Items            : Composition of many Items
                                on Items.Parent = $self;
+        Logs             : Association to many InvoiceLog
+                               on Logs.ParentInvoice = $self;
 // // Below part is on development
 // attachments : Composition of many C_Attachment on attachments.Parent = $self; <--- uncomment to enable attachment feature
 // attachments : Composition of many Attachments;
@@ -45,8 +48,8 @@ entity InvoiceHeader : cuid, managed {
 // entity C_Attachment : Attachments {
 //     key Parent : Association to one InvoiceHeader;
 // };
-
-entity Items : cuid {
+@cds.persistence.audit
+entity Items : cuid, managed {
     key ID                          : UUID;
     key Parent                      : Association to one InvoiceHeader @Common.Label: 'Parent_ID';
         PONumber                    : String(10) default ''            @Common.Label: 'Pur.Ord Number';
@@ -55,11 +58,11 @@ entity Items : cuid {
         UoM                         : String(5) default ''             @Common.Label: 'Unit of Measure';
         UnitPrice                   : String(15) default ''            @Common.Label: 'Unit Price';
         NetAmount                   : String(15) default ''            @Common.Label: 'Total Amount';
-        MatNum_ac                   : String(20) default ''                @Common.Label: 'Material Number - Accuracy';
-        Quantity_ac                 : String(20) default ''                @Common.Label: 'Quantity - Accuracy';
-        UoM_ac                      : String(20) default ''                @Common.Label: 'UoM - Accuracy';
-        UnitPrice_ac                : String(20) default ''                @Common.Label: 'Unit Price - Accuracy';
-        NetAmount_ac                : String(20) default ''                @Common.Label: 'Total Amount - Accuracy';
+        MatNum_ac                   : String(20) default ''            @Common.Label: 'Material Number - Accuracy';
+        Quantity_ac                 : String(20) default ''            @Common.Label: 'Quantity - Accuracy';
+        UoM_ac                      : String(20) default ''            @Common.Label: 'UoM - Accuracy';
+        UnitPrice_ac                : String(20) default ''            @Common.Label: 'Unit Price - Accuracy';
+        NetAmount_ac                : String(20) default ''            @Common.Label: 'Total Amount - Accuracy';
         Message                     : String(100) default ''           @Common.Label: 'Message';
         SuplInvItem                 : String(5) default ''             @Common.Label: 'Sup.Inv Item';
         POItem                      : String(5) default ''             @Common.Label: 'Item Number';
@@ -67,7 +70,21 @@ entity Items : cuid {
         ReferenceDocumentFiscalYear : String(20) default ''            @Common.Label: 'Ref.Doc.Year';
         ReferenceDocumentItem       : String(20) default ''            @Common.Label: 'Ref.Doc.Item';
         FiscalYear                  : String(5) default ''             @Common.Label: 'Fiscal Year';
+        Seq                         : String(10) default ''            @Common.Label: 'Line number';
 }
+
+
+//////
+entity InvoiceLog : cuid, managed {
+    key ID             : UUID;
+        ParentInvoice  : Association to one InvoiceHeader;
+        EventTimestamp : DateTime     @cds.on.insert: $now   @Common.Label: 'Log Time';
+        EventType      : String(50)   @Common.Label: 'Log Type';
+        EventDetails   : String(500)  @Common.Label: 'Detail';
+        PerformedBy    : String(256)  @cds.on.insert: $user  @Common.Label: 'Performed By';
+        Sequence       : Integer;
+}
+/////
 
 // For ValueHelp Feature - Purchase Order Number
 entity PurchaseOrderTable as

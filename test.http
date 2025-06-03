@@ -12,7 +12,7 @@ Content-Type: application/json
 
 {
     "data": {
-        "PONumber": "4500001921",
+        "PONumber": "4500001922",
         "MailDateTime": "2024-12-23T22:17:15+05:30",
         "SupplierMail": "Sriram@itresonance.com",
         "MailSubject": "invoice",
@@ -144,7 +144,8 @@ Content-Type: application/json
         "GrossAmount": "900",
         "StatusCode_code": "62",
         "Message": "",
-        "ProcessFlowID": "",
+        "Reason" : "Document is approved for posting",
+        "ProcessFlowID": "c57734f4-4084-11f0-8c79-eeee0a98698b",
         "SupplierName_ac": "90.42",
         "PONumber_ac": "90.83",
         "PODate_ac": "91.54",

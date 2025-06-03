@@ -6,12 +6,32 @@ using db.tables as Tables from '../db/schema';
 @path: '/invoiceAutomation-srv'
 service InvoiceService {
     // -------------------- Service Entities
-    entity InvoiceHeader  as projection on Tables.InvoiceHeader
+    entity InvoiceHeader  as
+        projection on Tables.InvoiceHeader {
+            *
+        }
+        order by
+            createdAt desc
         actions {
             action threeWayCheckUI();
         };
 
     entity InvoiceItems   as projection on Tables.Items;
+
+    // Expose the new InvoiceLog entity:
+    @readonly
+    entity InvoiceLog     as
+        projection on Tables.InvoiceLog {
+            ID,
+            ParentInvoice,
+            EventTimestamp,
+            EventType,
+            EventDetails,
+            PerformedBy,
+            Sequence
+        }
+        order by
+            Sequence desc;
 
     @cds.odata.valuelist
     entity PurchaseOrders as projection on Tables.PurchaseOrderTable;
@@ -41,6 +61,7 @@ service InvoiceService {
         UnitPrice_ac   : String(20);
         NetAmount_ac   : String(20);
         Message        : String;
+        POItem         : String(10);
     };
 
     // Attachment structure
@@ -151,7 +172,7 @@ service InvoiceService {
 
 // Extending the Entities - Delta
 extend Tables.InvoiceHeader with {
-    PONumber_ac_text     : String  = PONumber_ac || ' %'                   @Consumption.filter.hidden: true;
+    PONumber_ac_text     : String  = PONumber_ac || ' %' @Consumption.filter.hidden: true;
     PONumber_acc         : Integer =           case
                                                    when
                                                        (
@@ -161,7 +182,7 @@ extend Tables.InvoiceHeader with {
                                                        1
                                                    else
                                                        3
-                                               end                         @Consumption.filter.hidden: true;
+                                               end       @Consumption.filter.hidden: true;
     SupplierName_ac_text : String  = SupplierName_ac || ' %';
     SupplierName_acc     : Integer =           case
                                                    when
@@ -172,7 +193,7 @@ extend Tables.InvoiceHeader with {
                                                        1
                                                    else
                                                        3
-                                               end                         @Consumption.filter.hidden: true;
+                                               end       @Consumption.filter.hidden: true;
     SupInvNumber_ac_text : String  = SupInvNumber_ac || ' %';
     SupInvNumber_acc     : Integer =           case
                                                    when
@@ -183,7 +204,7 @@ extend Tables.InvoiceHeader with {
                                                        1
                                                    else
                                                        3
-                                               end                         @Consumption.filter.hidden: true;
+                                               end       @Consumption.filter.hidden: true;
     Curr_ac_text         : String  = Curr_ac || ' %';
     Curr_acc             : Integer =           case
                                                    when
@@ -194,7 +215,7 @@ extend Tables.InvoiceHeader with {
                                                        1
                                                    else
                                                        3
-                                               end                         @Consumption.filter.hidden: true;
+                                               end       @Consumption.filter.hidden: true;
     GrossAmount_ac_text  : String  = GrossAmount_ac || ' %';
     GrossAmount_acc      : Integer =           case
                                                    when
@@ -205,8 +226,8 @@ extend Tables.InvoiceHeader with {
                                                        1
                                                    else
                                                        3
-                                               end                         @Consumption.filter.hidden: true;
-    SupNoName            : String  = SupplierNumber || '-' || SupplierName @Common.Label             : 'Supplier';
+                                               end       @Consumption.filter.hidden: true;
+    SupNoName            : String  = SupplierName        @Common.Label             : 'Supplier';
     overall_ac           : Integer;
     overall_acc          : Integer =           case
                                                    when
@@ -224,8 +245,8 @@ extend Tables.InvoiceHeader with {
                                                        1
                                                    else
                                                        3
-                                               end                         @Consumption.filter.hidden: true;
-    overall_target       : Integer = 100                                   @Consumption.filter.hidden: true;
+                                               end       @Consumption.filter.hidden: true;
+    overall_target       : Integer = 100                 @Consumption.filter.hidden: true;
 
 };
 

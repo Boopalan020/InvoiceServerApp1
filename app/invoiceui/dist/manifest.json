@@ -125,8 +125,8 @@
                     ]
                 },
                 {
-                    "name": "InvoiceHeader_ItemsObjectPage",
                     "pattern": "InvoiceHeader({InvoiceHeaderKey})/Items({ItemsKey}):?query:",
+                    "name": "InvoiceHeader_ItemsObjectPage",
                     "target": [
                         "InvoiceHeaderMain",
                         "InvoiceHeaderObjectPage",
@@ -189,6 +189,17 @@
                                             "width": "8em"
                                         }
                                     }
+                                },
+                                "Logs/@com.sap.vocabularies.UI.v1.LineItem#i18nProcessLogs": {
+                                    "tableSettings": {
+                                        "condensedTableLayout": true,
+                                        "enableExport": true
+                                    }
+                                },
+                                "Logs/@com.sap.vocabularies.UI.v1.LineItem#ProcessLog": {
+                                    "tableSettings": {
+                                        "disableCopyToClipboard": true
+                                    }
                                 }
                             }
                         }
@@ -202,8 +213,14 @@
                     "name": "sap.fe.templates.ObjectPage",
                     "options": {
                         "settings": {
-                            "navigation": {},
                             "contextPath": "/InvoiceHeader/Items",
+                            "navigation": {},
+                            "content": {
+                                "header": {
+                                    "anchorBarVisible": false,
+                                    "visible": true
+                                }
+                            },
                             "editableHeaderContent": false
                         }
                     },

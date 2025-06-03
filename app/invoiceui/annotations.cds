@@ -37,15 +37,14 @@ annotate service.InvoiceHeader with @(
             ![@UI.Importance] : #High,
         },
         {
-            $Type : 'UI.DataField',
-            Value : SupNoName,
-            Label : '{i18n>Supplier}',
-            ![@UI.Importance] : #High,
-        },
-        {
             $Type : 'UI.DataFieldForAction',
             Action : 'tablemodel.srv.InvoiceService.threeWayCheckUI',
             Label : '{i18n>CheckSend1}',
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : SupplierName,
+            ![@UI.Importance] : #High,
         },
         {
             $Type : 'UI.DataField',
@@ -135,15 +134,21 @@ annotate service.InvoiceHeader with @(
     UI.Facets : [
         {
             $Type : 'UI.ReferenceFacet',
-            Label : 'General Info',
+            Label : '{i18n>Header}',
             ID : 'GeneralInfo',
             Target : '@UI.FieldGroup#GeneralInfo',
         },
         {
             $Type : 'UI.ReferenceFacet',
-            Label : 'Material(s)',
+            Label : '{i18n>Items1}',
             ID : 'Materials',
             Target : 'Items/@UI.LineItem#Materials',
+        },
+        {
+            $Type : 'UI.ReferenceFacet',
+            Label : 'Process Log',
+            ID : 'ProcessLog',
+            Target : 'Logs/@UI.LineItem#ProcessLog',
         },
     ],
     UI.FieldGroup #GeneralInfo : {
@@ -259,19 +264,15 @@ annotate service.InvoiceHeader with @(
         Data : [
             {
                 $Type : 'UI.DataField',
+                Value : SupplierMail,
+            },
+            {
+                $Type : 'UI.DataField',
                 Value : MailDateTime,
             },
             {
                 $Type : 'UI.DataField',
                 Value : MailSubject,
-            },
-            {
-                $Type : 'UI.DataField',
-                Value : SupplierNumber,
-            },
-            {
-                $Type : 'UI.DataField',
-                Value : SupplierMail,
             },
         ],
     },
@@ -282,19 +283,19 @@ annotate service.InvoiceHeader with @(
                 $Type : 'UI.DataField',
                 Value : Message,
                 Criticality : StatusCode.status_critics,
+                Label : '{i18n>Status}',
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : Reason,
+                Label : '{i18n>Message}',
+                Criticality : StatusCode.status_critics,
+                CriticalityRepresentation : #WithoutIcon,
             },
             {
                 $Type : 'UI.DataField',
                 Value : CreatedInvNumber,
                 CriticalityRepresentation : #WithoutIcon,
-            },
-            {
-                $Type : 'UI.DataField',
-                Value : ProcessFlowID,
-            },
-            {
-                $Type : 'UI.DataField',
-                Value : Comp_Code,
             },
         ],
     },
@@ -362,8 +363,6 @@ annotate service.InvoiceItems with @(
         {
             $Type : 'UI.DataField',
             Value : Message,
-            Criticality : Criticality_code_item,
-            CriticalityRepresentation : #WithoutIcon,
             ![@UI.Importance] : #Medium,
         },
     ],
@@ -374,15 +373,9 @@ annotate service.InvoiceItems with @(
             $Type : 'UI.DataField',
             Value : MaterialNumber,
         },
-        TypeImageUrl : 'sap-icon://product',
+        TypeImageUrl : '',
     },
     UI.HeaderFacets : [
-        {
-            $Type : 'UI.ReferenceFacet',
-            ID : 'Reference',
-            Target : '@UI.FieldGroup#Reference',
-            Label : 'S/4 Reference Details',
-        },
         {
             $Type : 'UI.ReferenceFacet',
             ID : 'Message',
@@ -764,4 +757,59 @@ annotate service.InvoiceHeader with {
         ![@UI.TextArrangement] : #TextLast
     }
 };
+
+annotate service.InvoiceLog with @(
+    UI.LineItem #i18nProcessLogs : [
+        {
+            $Type : 'UI.DataField',
+            Value : EventTimestamp,
+            Label : 'EventTimestamp',
+            ![@UI.Importance] : #High,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : EventType,
+            Label : 'EventType',
+            ![@UI.Importance] : #High,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : EventDetails,
+            Label : 'EventDetails',
+            ![@UI.Importance] : #High,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : PerformedBy,
+            Label : 'PerformedBy',
+            ![@UI.Importance] : #High,
+        },
+    ],
+    UI.LineItem #ProcessLog : [
+        {
+            $Type : 'UI.DataField',
+            Value : EventTimestamp,
+            Label : '{i18n>DateTime}',
+            ![@UI.Importance] : #High,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : EventType,
+            Label : '{i18n>LogType}',
+            ![@UI.Importance] : #High,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : EventDetails,
+            Label : '{i18n>LogDetails}',
+            ![@UI.Importance] : #High,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : PerformedBy,
+            Label : '{i18n>PerformedBy}',
+            ![@UI.Importance] : #High,
+        },
+    ],
+);
 

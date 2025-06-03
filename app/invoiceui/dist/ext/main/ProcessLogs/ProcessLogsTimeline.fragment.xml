@@ -1,0 +1,7 @@
+<core:FragmentDefinition xmlns="sap.suite.ui.commons" xmlns:core="sap.ui.core" xmlns:m="sap.m">
+<Timeline id="idTimeline" enableDoubleSided="true" content="{/Logs}">
+        <content>
+            <TimelineItem dateTime="{EventTimestamp}" title="{EventType}" text="{EventDetails}" userName="{PerformedBy}"></TimelineItem>
+        </content>
+    </Timeline>
+</core:FragmentDefinition>

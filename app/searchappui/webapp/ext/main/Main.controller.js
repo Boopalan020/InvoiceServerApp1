@@ -7,6 +7,11 @@ sap.ui.define(
 
         return PageController.extend('ns.app.searchappui.ext.main.Main', {
 
+            onInit: function () {
+                // this.getView().getModel("ui").setProperty("/isEditable", true);
+            },
+
+
             onAfterRendering: function (oEvent) {
                 var oView = this.getView();
                 var mFBConditions = new JSONModel({
