@@ -328,6 +328,7 @@ extend Tables.Items with {
 @impl: '/srv/Handlers/SearchAppHandler.js'
 service SearchAppService {
 
+    @odata.draft.enabled:true
     entity Searchheader as projection on Tables.Searchheader;
     entity Searchitem   as projection on Tables.Searchitem;
 

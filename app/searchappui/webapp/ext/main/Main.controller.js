@@ -9,6 +9,8 @@ sap.ui.define(
 
             onInit: function () {
                 // this.getView().getModel("ui").setProperty("/isEditable", true);
+                PageController.prototype.onInit.apply(this);
+                debugger;
             },
 
 

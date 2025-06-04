@@ -91,8 +91,6 @@ modules:
     commands:
     - npm install
     - npm run build:cf
-    - npm ci
-    - npm run build
     supported-platforms: []
 - name: nsappsearchappui
   type: html5
