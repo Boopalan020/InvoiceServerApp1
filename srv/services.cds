@@ -328,8 +328,9 @@ extend Tables.Items with {
 @impl: '/srv/Handlers/SearchAppHandler.js'
 service SearchAppService {
 
-    @odata.draft.enabled:true
+    @odata.draft.enabled: true
     entity Searchheader as projection on Tables.Searchheader;
+
     entity Searchitem   as projection on Tables.Searchitem;
 
     type ty_search_item {
@@ -344,17 +345,51 @@ service SearchAppService {
 // -------------------------- Entity for Configuration App - Search Criteria -----------------------------------------
 
 
+// -------------------------- Entity for Configuration App - Search Criteria (New) -----------------------------------------
+@path: '/Search-srv'
+@impl: '/srv/Handlers/SearchAppHandlerNew.js'
+service SearchService {
+
+    entity Searchheader as projection on Tables.SearchheaderNew;
+
+    entity Searchitem as projection on Tables.SearchitemNew;
+
+}
+// -------------------------- Entity for Configuration App - Search Criteria (New) -----------------------------------------
+
+
 ///////// ----------------------- START Entity for Purchase Order App -----------------------------------//////////////
 @path: '/PO-App-srv'
 @impl: '/srv/Handlers/POAppHandler.js'
 service POServices {
 
-    entity POHeader as projection on Tables.POHeader
+    entity POHeader as
+        projection on Tables.POHeader {
+            *
+        }
+        order by
+            createdAt desc
         actions {
             action refresh_extractions();
+            action post_so();
         };
 
     entity POItem   as projection on Tables.PoItems;
+
+    // Expose the new InvoiceLog entity:
+    @readonly
+    entity PO_Log   as
+        projection on Tables.PO_Log {
+            ID,
+            Parent_PO,
+            EventTimestamp,
+            EventType,
+            EventDetails,
+            PerformedBy,
+            Sequence
+        }
+        order by
+            Sequence desc;
 
     // Structure
     type po_payload {

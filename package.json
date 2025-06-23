@@ -99,7 +99,17 @@
         }
       },
       "html5-repo": true,
-      "connectivity": true
+      "connectivity": true,
+      "saleordersrv": {
+        "kind": "odata-v2",
+        "model": "srv/external/saleordersrv",
+          "credentials": {
+            "destination": "onprem",
+            "path": "/sap/opu/odata/sap/API_SALES_ORDER_SRV/"
+          },
+        "csrf": true,
+        "csrfInBatch": true
+      }
     },
     "sql": {
       "native_hana_associations": false

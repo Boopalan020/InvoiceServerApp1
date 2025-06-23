@@ -14,7 +14,7 @@
             <f:DynamicPageTitle id="_IDGenDynamicPageTitle1">
                 <f:heading>
                     <Title
-                        text="Invoice Automation Logs"
+                        text="Outlook search configuration"
                         level="H2"
                     />
                 </f:heading>

@@ -11,37 +11,45 @@ annotate service.POHeader with @(
     UI.LineItem       : [
         {
             $Type: 'UI.DataField',
-            Value: ID,
-            ![@UI.Hidden],
+            Value: documentNumber,
+            ![@UI.Importance] : #High,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : senderName,
+            Label : '{i18n>SenderName}',
+            ![@UI.Importance] : #High,
         },
         {
             $Type: 'UI.DataField',
             Value: documentDate,
-        },
-        {
-            $Type: 'UI.DataField',
-            Value: documentNumber,
-        },
-        {
-            $Type: 'UI.DataField',
-            Value: emailid,
+            ![@UI.Importance] : #High,
         },
         {
             $Type: 'UI.DataField',
             Value: grossAmount,
+            ![@UI.Importance] : #High,
         },
         {
-            $Type: 'UI.DataField',
-            Value: mailSubject,
+            $Type : 'UI.DataField',
+            Value : createdAt,
+            ![@UI.Importance] : #High,
         },
         {
             $Type : 'UI.DataField',
             Value : extraction_status,
+            Label : 'Status',
+            ![@UI.Importance] : #High,
         },
         {
             $Type : 'UI.DataFieldForAction',
             Action : 'tablemodel.srv.POServices.refresh_extractions',
             Label : '{i18n>Refresh}',
+        },
+        {
+            $Type : 'UI.DataFieldForAction',
+            Action : 'tablemodel.srv.POServices.post_so',
+            Label : 'Post Sale Order',
         },
     ],
     UI.Facets : [
@@ -57,6 +65,12 @@ annotate service.POHeader with @(
             ID : 'i18nItems',
             Target : 'PoItems/@UI.LineItem#i18nItems',
         },
+        {
+            $Type : 'UI.ReferenceFacet',
+            Label : 'Process Logs',
+            ID : 'ProcessLogs',
+            Target : 'Logs/@UI.LineItem#ProcessLogs3',
+        },
     ],
     UI.HeaderFacets : [
         {
@@ -67,7 +81,7 @@ annotate service.POHeader with @(
         },
         {
             $Type : 'UI.ReferenceFacet',
-            Label : 'Document Extraction Info',
+            Label : '{i18n>DocumentInfo}',
             ID : 'DocumentExtractionInfo',
             Target : '@UI.FieldGroup#DocumentExtractionInfo',
         },
@@ -82,32 +96,31 @@ annotate service.POHeader with @(
         Data : [
             {
                 $Type : 'UI.DataField',
+                Value : emailid,
+                Label : '{i18n>SupplierMailId}',
+            },
+            {
+                $Type : 'UI.DataField',
                 Value : mailDateTime,
+                Label : '{i18n>MailDateTime}',
             },
             {
                 $Type : 'UI.DataField',
                 Value : mailSubject,
-            },
-            {
-                $Type : 'UI.DataField',
-                Value : documentNumber,
-            },
-            {
-                $Type : 'UI.DataField',
-                Value : senderAddress,
+                Label : '{i18n>EmailSubject1}',
             },
         ],
     },
     UI.HeaderInfo : {
         Title : {
             $Type : 'UI.DataField',
-            Value : emailid,
+            Value : senderName,
         },
         TypeName : '',
         TypeNamePlural : '',
         Description : {
             $Type : 'UI.DataField',
-            Value : 'Email-ID',
+            Value : '{i18n>SenderName}',
         },
         TypeImageUrl : 'sap-icon://sales-document',
     },
@@ -123,11 +136,17 @@ annotate service.POHeader with @(
         Data : [
             {
                 $Type : 'UI.DataField',
-                Value : dox_id,
+                Value : extraction_status,
+                Label : 'Status',
             },
             {
                 $Type : 'UI.DataField',
-                Value : extraction_status,
+                Value : Message,
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : SalesOrderNumber,
+                Label : 'S/4 Sales Order Number',
             },
         ],
     },
@@ -173,18 +192,22 @@ annotate service.POHeader with @(
             },
             {
                 $Type : 'UI.DataFieldForAnnotation',
-                Target : '@UI.ConnectedFields#connected2',
-                Label : 'Gross Amount',
-            },
-            {
-                $Type : 'UI.DataFieldForAnnotation',
                 Target : '@UI.ConnectedFields#connected3',
                 Label : 'Net Amount',
             },
             {
                 $Type : 'UI.DataFieldForAnnotation',
-                Target : '@UI.ConnectedFields#connected4',
+                Target : '@UI.ConnectedFields#connected6',
                 Label : 'Currency Code',
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : paymentTerms,
+            },
+            {
+                $Type : 'UI.DataField',
+                Value : shipToAddress,
+                Label : 'Ship To Address',
             },
         ],
     },
@@ -293,6 +316,44 @@ annotate service.POHeader with @(
         ],
         Description : 'of all Key Fields',
     },
+    Communication.Contact #contact : {
+        $Type : 'Communication.ContactType',
+        fn : currencyCode,
+    },
+    UI.ConnectedFields #connected5 : {
+        $Type : 'UI.ConnectedFieldsType',
+        Template : '{currencyCode}-{currencyCode_ac}',
+        Data : {
+            $Type : 'Core.Dictionary',
+            currencyCode : {
+                $Type : 'UI.DataField',
+                Value : currencyCode,
+            },
+            currencyCode_ac : {
+                $Type : 'UI.DataField',
+                Value : currencyCode_ac,
+                Criticality : currencyCode_acc,
+                CriticalityRepresentation : #WithoutIcon,
+            },
+        },
+    },
+    UI.ConnectedFields #connected6 : {
+        $Type : 'UI.ConnectedFieldsType',
+        Template : '{currencyCode}-{currencyCode_ac_text}',
+        Data : {
+            $Type : 'Core.Dictionary',
+            currencyCode : {
+                $Type : 'UI.DataField',
+                Value : currencyCode,
+            },
+            currencyCode_ac_text : {
+                $Type : 'UI.DataField',
+                Value : currencyCode_ac_text,
+                Criticality : currencyCode_acc,
+                CriticalityRepresentation : #WithoutIcon,
+            },
+        },
+    },
 );
 annotate service.POItem with @(
     UI.LineItem #i18nItems : [
@@ -309,13 +370,6 @@ annotate service.POItem with @(
             Criticality : description_acc,
             CriticalityRepresentation : #WithoutIcon,
             ![@UI.Importance] : #Low,
-        },
-        {
-            $Type : 'UI.DataField',
-            Value : netAmount,
-            Criticality : netAmount_acc,
-            CriticalityRepresentation : #WithoutIcon,
-            ![@UI.Importance] : #High,
         },
         {
             $Type : 'UI.DataField',
@@ -337,6 +391,17 @@ annotate service.POItem with @(
             Criticality              : unitPrice_acc,
             CriticalityRepresentation: #WithoutIcon,
             ![@UI.Importance]        : #High,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : netAmount,
+            Criticality : netAmount_acc,
+            CriticalityRepresentation : #WithoutIcon,
+            ![@UI.Importance] : #High,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : Parent.PoItems.currencyCode,
         },
     ],
     UI.HeaderInfo : {
@@ -508,5 +573,79 @@ annotate service.POItem with @(
             },
         },
     },
+);
+
+annotate service.POHeader with {
+    grossAmount @Common.Text : {
+        $value : currencyCode,
+        ![@UI.TextArrangement] : #TextLast
+    }
+};
+
+annotate service.PO_Log with @(
+    UI.LineItem #ProcessLogs : [
+    ],
+    UI.LineItem #ProcessLogs1 : [
+        {
+            $Type : 'UI.DataField',
+            Value : EventTimestamp,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : EventType,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : EventDetails,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : PerformedBy,
+        },
+    ],
+    UI.LineItem #ProcessLogs2 : [
+        {
+            $Type : 'UI.DataField',
+            Value : EventDetails,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : EventTimestamp,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : EventType,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : PerformedBy,
+        },
+    ],
+    UI.LineItem #ProcessLogs3 : [
+        {
+            $Type : 'UI.DataField',
+            Value : EventTimestamp,
+            Label : '{i18n>DateTime}',
+            ![@UI.Importance] : #High,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : EventType,
+            Label : '{i18n>LogType}',
+            ![@UI.Importance] : #High,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : EventDetails,
+            Label : '{i18n>LogDetails}',
+            ![@UI.Importance] : #High,
+        },
+        {
+            $Type : 'UI.DataField',
+            Value : PerformedBy,
+            Label : '{i18n>PerformedBy}',
+            ![@UI.Importance] : #High,
+        },
+    ],
 );
 

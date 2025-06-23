@@ -1,8 +1,8 @@
 namespace db.tables;
 
 using {
-    cuid,
-    managed,
+                           cuid,
+                           managed,
     sap.common.CodeList as CodeList
 } from '@sap/cds/common';
 using {Attachments} from '@cap-js/sdm';
@@ -166,6 +166,7 @@ entity Operands : CodeList {
 
 
 // -------------------------- Entity for Purchase Order App -----------------------------------------
+@cds.persistence.audit
 entity POHeader : cuid, managed {
     key ID                     : UUID;
         documentNumber         : String(10) default ''        @Common.Label: 'Pur.Ord Number';
@@ -220,11 +221,16 @@ entity POHeader : cuid, managed {
         currencyCode_ac        : String(8) default '0.00'     @Common.Label: 'Currency - Accuracy';
         documentDate_ac        : String(8) default '0.00'     @Common.Label: 'Doc.Date - Accuracy';
         senderName_ac          : String(8) default '0.00'     @Common.Label: 'Sender Name - Accuracy';
+        SalesOrderNumber       : String(10) default ''        @Common.Label: 'Sales Order Number';
+        Message                : String(256) default ''       @Common.Label: 'Message';
         PoItems                : Composition of many PoItems
                                      on PoItems.Parent = $self;
+        Logs                   : Association to many PO_Log
+                                     on Logs.Parent_PO = $self;
 }
 
-entity PoItems : cuid {
+@cds.persistence.audit
+entity PoItems : cuid, managed {
     key ID                        : UUID;
     key Parent                    : Association to one POHeader @Common.Label: 'Parent_ID';
         description               : String(60) default ''       @Common.Label: 'Description';
@@ -249,4 +255,36 @@ entity PoItems : cuid {
         unitOfMeasure_ac          : String(8) default '0.00'    @Common.Label: 'UoM - Accuracy';
         customerMaterialNumber_ac : String(8) default '0.00'    @Common.Label: 'Cust.Mat Number - Accuracy';
 }
+
+//////Purchase Order Log
+entity PO_Log : cuid, managed {
+    key ID             : UUID;
+        Parent_PO      : Association to one POHeader;
+        EventTimestamp : DateTime     @cds.on.insert: $now   @Common.Label: 'Log Time';
+        EventType      : String(50)   @Common.Label: 'Log Type';
+        EventDetails   : String(500)  @Common.Label: 'Detail';
+        PerformedBy    : String(256)  @cds.on.insert: $user  @Common.Label: 'Performed By';
+        Sequence       : Integer;
+}
+/////Purchase Order Log
+
 // -------------------------- Entity for Purchase Order App -----------------------------------------
+
+
+// -------------------------- Entity for Configuration App - Search Criteria (New) -----------------------------------------
+entity SearchheaderNew : cuid, managed {
+    Name         : String(255) @Common.Label: 'User Name';
+    Status       : String      @Common.Label: 'Status';
+    machine_name : String(100) @Common.Label: 'Machine Name';
+    Items_s      : Composition of many SearchitemNew
+                       on Items_s.parent = $self;
+}
+
+entity SearchitemNew : cuid {
+    key parent  : Association to SearchheaderNew;
+        mailid  : String @Common.Label: 'MailID';
+        subject : String @Common.Label: 'Subject keyword';
+        match   : String @Common.Label: 'Exact Match';
+}
+
+// -------------------------- Entity for Configuration App - Search Criteria (New) -----------------------------------------
