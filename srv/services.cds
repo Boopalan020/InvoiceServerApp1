@@ -351,8 +351,19 @@ service SearchAppService {
 service SearchService {
 
     entity Searchheader as projection on Tables.SearchheaderNew;
-
     entity Searchitem as projection on Tables.SearchitemNew;
+
+    type ty_item_obj {
+        element : String(50);
+        operand : String(50);
+        value   : String(50);
+    };
+
+    type ty_response {
+        items : array of ty_item_obj
+    };
+
+    function getSearchConfig(username: String, machinename : String) returns array of ty_response;
 
 }
 // -------------------------- Entity for Configuration App - Search Criteria (New) -----------------------------------------

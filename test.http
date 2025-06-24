@@ -307,4 +307,14 @@ Content-Type: application/json
     "match" : "true"
 }
 
+###
+GET http://localhost:4004/Search-srv/getSearchConfig
+Content-Type: application/json
+
+{
+    "username" : "Boopalan",
+    "machinename" : "ITRLAP122"
+}
+
+
 ####################################################################################################################

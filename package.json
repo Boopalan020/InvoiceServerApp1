@@ -6,6 +6,7 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "@cap-js-community/odata-v2-adapter": "^1.15.1",
     "@cap-js/change-tracking": "^1.0.8",
     "@cap-js/hana": "^1",
     "@cap-js/sdm": "^1.2.1",
@@ -103,10 +104,10 @@
       "saleordersrv": {
         "kind": "odata-v2",
         "model": "srv/external/saleordersrv",
-          "credentials": {
-            "destination": "onprem",
-            "path": "/sap/opu/odata/sap/API_SALES_ORDER_SRV/"
-          },
+        "credentials": {
+          "destination": "onprem",
+          "path": "/sap/opu/odata/sap/API_SALES_ORDER_SRV/"
+        },
         "csrf": true,
         "csrfInBatch": true
       }
