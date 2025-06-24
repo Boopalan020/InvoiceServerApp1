@@ -9,13 +9,15 @@
     "@cap-js-community/odata-v2-adapter": "^1.15.1",
     "@cap-js/change-tracking": "^1.0.8",
     "@cap-js/hana": "^1",
+    "@cap-js/postgres": "^1.14.1",
     "@cap-js/sdm": "^1.2.1",
     "@sap-cloud-sdk/http-client": "^3.21.0",
     "@sap-cloud-sdk/resilience": "^3.21.0",
     "@sap-cloud-sdk/util": "^3.21.0",
     "@sap/cds": "^8",
     "@sap/xssec": "^4",
-    "express": "^4"
+    "express": "^4",
+    "pg": "^8.16.2"
   },
   "devDependencies": {
     "@cap-js/cds-types": "^0.6",
@@ -42,7 +44,6 @@
   "cds": {
     "requires": {
       "[production]": {
-        "db": "hana",
         "auth": "xsuaa",
         "destinations": true,
         "connectivity": true
@@ -50,6 +51,15 @@
       "[development]": {
         "auth": "mocked",
         "destinations": true
+      },
+      "db": {
+        "kind": "postgres",
+        "dialect": "postgres",
+        "impl": "@cap-js/postgres",
+        "vcap": {
+          "label": "user-provided",
+          "name": "automation-postgres"
+        }
       },
       "materialDoc": {
         "kind": "odata-v2",

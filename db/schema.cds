@@ -178,8 +178,8 @@ entity POHeader : cuid, managed {
         netAmount              : String(20) default ''        @Common.Label: 'Net Amount';
         grossAmount            : String(20) default ''        @Common.Label: 'Gross Amount';
         currencyCode           : String(5) default ''         @Common.Label: 'Currency Code';
-        documentDate           : Date default ''              @Common.Label: 'Document Date';
-        deliveryDate           : Date default ''              @Common.Label: 'Delivery Date';
+        documentDate           : Date                         @Common.Label: 'Document Date';
+        deliveryDate           : Date                         @Common.Label: 'Delivery Date';
         senderName             : String(60) default ''        @Common.Label: 'Ship To Address';
         senderEmail            : String(60) default ''        @Common.Label: 'Sender Email';
         StatusCode             : Association to one Status    @Common.Label: 'Status';
@@ -238,7 +238,7 @@ entity PoItems : cuid, managed {
         quantity                  : String(10) default ''       @Common.Label: 'Quantity';
         unitPrice                 : String(15) default ''       @Common.Label: 'Unit Price';
         materialNumber            : String(40) default ''       @Common.Label: 'Material Number';
-        documentDate              : Date default ''             @Common.Label: 'Document Date';
+        documentDate              : Date                        @Common.Label: 'Document Date';
         itemNumber                : String(6) default ''        @Common.Label: 'Item Number';
         currencyCode              : String(5) default ''        @Common.Label: 'Currency Code';
         senderMaterialNumber      : String(40) default ''       @Common.Label: 'Sender Material Number';

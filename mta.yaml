@@ -7,10 +7,10 @@ modules:
   type: nodejs
   path: gen/srv
   requires:
-  - name: InvoiceServerApp1-db
   - name: InvoiceServerApp1-auth
   - name: InvoiceServerApp1-connectivity
   - name: InvoiceServerApp1-destination-service
+  - name: automation-postgres
   provides:
   - name: srv-api
     properties:
@@ -23,13 +23,6 @@ modules:
     readiness-health-check-type: http
   build-parameters:
     builder: npm
-- name: InvoiceServerApp1-db-deployer
-  type: hdb
-  path: gen/db
-  requires:
-  - name: InvoiceServerApp1-db
-  parameters:
-    buildpack: nodejs_buildpack
 - name: InvoiceServerApp1-app-deployer
   type: com.sap.application.content
   path: gen
@@ -113,11 +106,6 @@ modules:
     - npm run build:cf
     supported-platforms: []
 resources:
-- name: InvoiceServerApp1-db
-  type: com.sap.xs.hdi-container
-  parameters:
-    service: hana
-    service-plan: hdi-shared
 - name: InvoiceServerApp1-auth
   type: org.cloudfoundry.managed-service
   parameters:
@@ -164,6 +152,11 @@ resources:
   parameters:
     service: connectivity
     service-plan: lite
+- name: automation-postgres 
+  type: org.cloudfoundry.existing-service
+  parameters:
+    service: automation-postgres
+    service-plan: user-provided
 parameters:
   deploy_mode: html5-repo
   enable-parallel-deployments: true
