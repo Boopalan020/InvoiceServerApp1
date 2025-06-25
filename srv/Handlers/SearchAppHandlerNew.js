@@ -1,4 +1,5 @@
 const cds = require("@sap/cds");
+const { transformEmailItems } = require("../Utils/Utilities");
 
 module.exports = class SearchService extends cds.ApplicationService {
     async init() {
@@ -17,23 +18,11 @@ module.exports = class SearchService extends cds.ApplicationService {
             } = cds.entities('tablemodel.srv.SearchService'),
                 aHeaderData,
                 aItemData,
-                aOperandData,
-                aElementData,
                 resp_Data = [];
-                // sOperandTable = 'db.tables.Operands',
-                // sElementTable = 'db.tables.elementlist';
 
             try {
                 console.log("Req Body : ", req.data);
-
-                // Search Help Data for operands
-                // aOperandData = await hana_db.run(SELECT.from(sOperandTable));
-                // console.log(aOperandData);
-
-                // // Search Help Data for elementlist
-                // aElementData = await hana_db.run(SELECT.from(sElementTable));
-                // console.log(aElementData);
-
+                
                 // Header Data for search
                 aHeaderData = await hana_db.run(SELECT.one.from(Searchheader).where({
                     Status: "Active",
@@ -47,34 +36,20 @@ module.exports = class SearchService extends cds.ApplicationService {
                         parent: aHeaderData.ID
                     }));
 
-                    // console.log(aItemData);
-                    // aItemData = aItemData.sort((a, b) => parseInt(a.Sequence) - parseInt(b.Sequence) );
-                    // for (const item of aItemData) {
-                    //     const ele = aElementData.find(({
-                    //         code,
-                    //         name
-                    //     }) => {
-                    //         if (code === item.elements1_code) return name
-                    //     });
-                    //     resp_Data.push({
-                    //         element: aElementData.find(({
-                    //             code,
-                    //             name
-                    //         }) => code === item.elements1_code).name,
-                    //         operand: aOperandData.find(({
-                    //             code
-                    //         }) => code === item.operand_code).name,
-                    //         value: item.Value
-                    //     });
-                    // }
+                    resp_Data = transformEmailItems(aItemData);
                     return resp_Data;
                 }
-
             } catch (err) {
                 console.log(err);
+                return {
+                    status: "Error",
+                    message: err.message
+                };
             }
 
-            // resp_Data = resp_Data.sort((a, b) => parseInt(a.Sequence) - parseInt(b.Sequence) );
+            return {
+                message : "No data found with 'Name' and 'machinename'."
+            }
         });
 
         return super.init()
