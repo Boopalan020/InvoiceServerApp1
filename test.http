@@ -228,8 +228,8 @@ GET http://localhost:4004/SearchApp-srv/getSearchConfig
 Content-Type: application/json
 
 {
-    "username" : "Boopalan",
-    "machinename" : "ITRLAP122"
+    "username" : "srini",
+    "machinename" : "RajanSrini"
 }
 
 
@@ -312,8 +312,8 @@ GET http://localhost:4004/Search-srv/getSearchConfig
 Content-Type: application/json
 
 {
-    "username" : "Boopalan",
-    "machinename" : "ITRLAP122"
+    "username" : "Sriram",
+    "machinename" : "ITRLAP095"
 }
 
 
