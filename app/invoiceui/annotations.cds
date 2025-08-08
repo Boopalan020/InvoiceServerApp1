@@ -5,7 +5,7 @@ using from '../../db/schema';
 annotate service.InvoiceHeader with @(
     odata.draft.enabled,
     UI.DeleteHidden : { 
-        $edmJson: {               
+        $edmJson: {
             $Or: [  { $Eq: [ { $Path: 'StatusCode/code' }, '61'  ] },
                     { $Eq: [ { $Path: 'StatusCode/code' }, '62'  ] }         
             ]

@@ -4,7 +4,7 @@
         <f:title>
             <f:DynamicPageTitle id="_IDGenDynamicPageTitle1">
                 <f:heading>
-                    <Title id="_IDGenTitle1" text="Purchase Order Automation Logs" level="H2"/>
+                    <Title id="_IDGenTitle1" text="Sales Order Automation Logs" level="H2"/>
                 </f:heading>
                 <f:snappedContent>
                     <Text id="text-01" text="{fbConditions>/filtersTextInfo}"/>

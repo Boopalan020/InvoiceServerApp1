@@ -275,6 +275,11 @@ Content-Type: application/json
     "Status" : "Active"
 }
 
+###
+DELETE http://localhost:4004/Search-srv/Searchheader(ID=afe8fae6-4293-47c8-b950-881a3943fedf)
+Content-Type: application/json
+
+
 ### to get list of item details irrespective of parent
 GET http://localhost:4004/Search-srv/Searchitem
 Content-Type: application/json
@@ -283,18 +288,14 @@ Content-Type: application/json
 GET http://localhost:4004/Search-srv/Searchheader(ID=07319fd8-a4ba-4e17-ad04-145348684454)?$expand=Items_s
 Content-Type: application/json
 
-### to create new list of items of a one search header
-PATCH  http://localhost:4004/Search-srv/Searchheader(ID=07319fd8-a4ba-4e17-ad04-145348684454)
+### to create new item of an one search header
+POST  http://localhost:4004/Search-srv/Searchheader(ID=443625e3-6ca8-4bc5-b901-7c2efbdf9a91)/Items_s
 Content-Type: application/json
 
 {
-    "Items_s" : [
-        {
-            "mailid" : "boopalan1@itresonance.com",
-            "subject" : "invoice;billing;transaction",
-            "match" : "true"
-        }
-    ]
+    "mailid" : "boopalan1@itresonance.com",
+    "subject" : "invoice;billing;transaction",
+    "match" : "false"
 }
 
 ### to upate one line item of the search header
@@ -316,5 +317,10 @@ Content-Type: application/json
     "machinename" : "ITRLAP095"
 }
 
+###
+GET http://localhost:4004/Search-srv/StatusVH
+Content-Type: application/json
 
-####################################################################################################################
+###
+GET http://localhost:4004/Search-srv/MachineVH
+Content-Type: application/json

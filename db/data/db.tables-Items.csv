@@ -1,0 +1,1 @@
+Parent_ID,ID,PONumber,MaterialNumber,Quantity,UoM,UnitPrice,NetAmount,MatNum_ac,Quantity_ac,UoM_ac,UnitPrice_ac,NetAmount_ac,Message,SuplInvItem,POItem,ReferenceDocument,ReferenceDocumentFiscalYear,ReferenceDocumentItem,FiscalYear,Seq,createdAt,createdBy,modifiedAt,modifiedBy

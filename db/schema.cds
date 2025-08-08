@@ -273,11 +273,13 @@ entity PO_Log : cuid, managed {
 
 // -------------------------- Entity for Configuration App - Search Criteria (New) -----------------------------------------
 entity SearchheaderNew : cuid, managed {
-    Name         : String(255) @Common.Label: 'User Name';
-    Status       : String      @Common.Label: 'Status';
-    machine_name : String(100) @Common.Label: 'Machine Name';
+    Name         : String(255)                @Common.Label: 'User Name';
+    Status       : String default 'In-active' @Common.Label: 'Status';
+    machine_name : String(100)                @Common.Label: 'Machine Name';
     Items_s      : Composition of many SearchitemNew
                        on Items_s.parent = $self;
+
+
 }
 
 entity SearchitemNew : cuid {
@@ -285,6 +287,22 @@ entity SearchitemNew : cuid {
         mailid  : String @Common.Label: 'MailID';
         subject : String @Common.Label: 'Subject keyword';
         match   : String @Common.Label: 'Exact Match';
+}
+
+// @cds.persistence.skip
+// entity status_config {
+//     key type           : String(20)  @Common.Label: 'Status Code';
+//         formattedValue : String(30)  @Common.Text  @Common.Label: 'Status Description';
+// }
+
+@cds.persistence.skip
+entity status_config {
+    key type        : String;
+}
+
+@cds.persistence.skip
+entity machine_config {
+    key machine_name : String;
 }
 
 // -------------------------- Entity for Configuration App - Search Criteria (New) -----------------------------------------

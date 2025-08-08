@@ -1,0 +1,1 @@
+ID,PONumber,MailDateTime,Comp_Code,SupplierMail,MailSubject,SupInvNumber,CreatedInvNumber,SupplierNumber,SupplierName,PODate,Currency,GrossAmount,StatusCode_code,Message,Reason,ProcessFlowID,SupplierName_ac,PONumber_ac,PODate_ac,Curr_ac,SupInvNumber_ac,GrossAmount_ac,SupNoName,overall_ac,createdAt,createdBy,modifiedAt,modifiedBy
